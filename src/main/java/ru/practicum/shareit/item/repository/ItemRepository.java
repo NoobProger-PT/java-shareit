@@ -74,7 +74,8 @@ public class ItemRepository {
         if (id == 0) {
             id = getId();
         }
-        if (userRepository.findById(item.getUserId()).getId() == item.getUserId()) {
+        long userIdFromRep = userRepository.findById(item.getUserId()).getId();
+        if (userIdFromRep == item.getUserId()) {
             items.compute(item.getUserId(), (userId, userItems) -> {
                 if (userItems == null) {
                     userItems = new ArrayList<>();
