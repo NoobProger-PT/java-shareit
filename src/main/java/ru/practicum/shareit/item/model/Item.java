@@ -2,8 +2,6 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Data
@@ -11,11 +9,9 @@ public class Item {
 
     private Long id;
     private Long userId;
-    @NotBlank
     private String name;
-    @Size(max = 100) @NotBlank
     private String description;
-    private Boolean available;
+    private boolean available;
 
     @Override
     public boolean equals(Object o) {

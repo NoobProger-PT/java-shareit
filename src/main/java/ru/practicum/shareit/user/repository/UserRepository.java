@@ -1,85 +1,77 @@
 package ru.practicum.shareit.user.repository;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.InvalidUser;
 import ru.practicum.shareit.exception.UserDontExistsException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
-@Component
+@Repository
 public class UserRepository {
-    private final List<User> users = new ArrayList<>();
+    private final Map<Long, User> users = new HashMap<>();
+    private final Set<String> emailUniqSet = new HashSet<>();
 
     private long id = 0;
 
-    public List<User> findAll() {
-        return users;
+    public List<UserDto> findAll() {
+        List<UserDto> dtoList = new ArrayList<>();
+        for (User user : users.values()) {
+            dtoList.add(UserMapper.mapToUserDto(user));
+        }
+        return dtoList;
     }
 
     public User findById(long id) {
-        List<User> userById = users.stream()
-                .filter(u -> u.getId() == id)
-                .collect(Collectors.toList());
-        if (userById.size() == 0) {
+        if (!users.keySet().contains(id)) {
             throw new UserDontExistsException("Пользователь не найден.");
         }
-        return userById.get(0);
+        User userById = users.get(id);
+        return userById;
     }
 
     public User save(User user) {
-        if (users.contains(user)) {
-            throw new InvalidUser("Пользователь с таким Email уже существует.");
-        }
-        if (id == 0) {
-            id = getId();
-        }
-        user.setId(id++);
-        users.add(user);
+        checkEmail(user.getEmail());
+        user.setId(++id);
+        users.put(user.getId(), user);
+        emailUniqSet.add(user.getEmail());
         return user;
     }
 
     public User updateUser(User user) {
-        if (!users.contains(user)) {
+        if (!users.keySet().contains(id)) {
             throw new UserDontExistsException("Пользователь не найден в базе данных.");
         }
-        int userPosition = users.indexOf(user);
-        User updatedUser = users.get(userPosition);
+
+        User updatedUser = users.get(user.getId());
 
         if (user.getName() != null) {
             updatedUser.setName(user.getName());
         }
         if (user.getEmail() != null) {
-            List<User> checkEmail = users.stream()
-                    .filter(u -> u.getEmail().equals(user.getEmail()))
-                    .collect(Collectors.toList());
-            if (checkEmail.size() == 0) {
-                updatedUser.setEmail(user.getEmail());
-            } else {
-                throw new InvalidUser("Почтовый адрес уже занят.");
-            }
+            checkEmail(user.getEmail());
+            emailUniqSet.remove(updatedUser.getEmail());
+            updatedUser.setEmail(user.getEmail());
+            emailUniqSet.add(user.getEmail());
         }
         return updatedUser;
     }
 
     public void deleteUser(long userId) {
-        List<User> userForDelete = users.stream()
-                .filter(u -> u.getId() == userId)
-                .collect(Collectors.toList());
-        if (userForDelete.size() == 0) {
+        if (!users.containsKey(userId)) {
             throw new UserDontExistsException("Пользователь не найден.");
         } else {
-            users.remove(userForDelete.get(0));
+            User userForDelete = users.get(userId);
+            emailUniqSet.remove(userForDelete.getEmail());
+            users.remove(userId);
         }
     }
 
-    private long getId() {
-        long lastId = users.stream()
-                .mapToLong(User::getId)
-                .max()
-                .orElse(0);
-        return lastId + 1;
+    private void checkEmail(String email) {
+        if (emailUniqSet.contains(email)) {
+            throw new InvalidUser("Пользователь с таким Email уже существует.");
+        }
     }
 }

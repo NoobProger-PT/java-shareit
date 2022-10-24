@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.InvalidItem;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 
@@ -20,13 +21,14 @@ public class ItemServiceImpl implements ItemService {
         return repository.findAll(userId);
     }
 
-    public ItemDto addNewItem(long userId, Item item) {
-        if (item.getAvailable() == null) {
-            throw new InvalidItem("Укажите статус вещи.");
-        }
-        item.setUserId(userId);
-        ItemDto itemDto = repository.save(item);
-        return itemDto;
+    public ItemDto addNewItem(long userId, ItemDto itemDto) {
+//        if (itemDto.getAvailable() == null) {
+//            throw new InvalidItem("Укажите статус вещи.");
+//        }
+        itemDto.setUserId(userId);
+        Item item = ItemMapper.mapToItem(itemDto, userId);
+        ItemDto dto = repository.save(item);
+        return dto;
     }
 
     public ItemDto findItemById(long itemId) {

@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return repository.findAll();
     }
 
@@ -25,14 +25,16 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto saveUser(UserDto userDto) {
+
         User user = repository.save(UserMapper.mapToUser(userDto));
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto updateUser(long id, User user) {
-        user.setId(id);
-        User updatedUser = repository.updateUser(user);
-        return UserMapper.mapToUserDto(updatedUser);
+    public UserDto updateUser(long id, UserDto userDto) {
+        userDto.setId(id);
+        User updatedUser = UserMapper.mapToUser(userDto);
+        User toDto = repository.updateUser(updatedUser);
+        return UserMapper.mapToUserDto(toDto);
     }
 
     public void deleteUser(long userId) {

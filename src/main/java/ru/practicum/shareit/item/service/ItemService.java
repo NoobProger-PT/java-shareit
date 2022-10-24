@@ -6,7 +6,8 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemService {
-    ItemDto addNewItem(long userId, Item item);
+    List<ItemDto> getItems(long userId);
+    ItemDto addNewItem(long userId, ItemDto itemDto);
 
     ItemDto findItemById(long itemId);
 

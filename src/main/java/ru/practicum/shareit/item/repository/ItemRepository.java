@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ItemDontExistsException;
 import ru.practicum.shareit.exception.UserDontExistsException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -12,10 +12,11 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class ItemRepository {
     private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, Item> storage = new LinkedHashMap<>();
 
     private long id = 0;
 
@@ -23,47 +24,37 @@ public class ItemRepository {
 
     public List<ItemDto> findAll(long userId) {
         List<Item> userItems = items.get(userId);
-        List<ItemDto> items = new ArrayList<>();
+        List<ItemDto> itemsDto = new ArrayList<>();
         for (Item item : userItems) {
-            items.add(ItemMapper.mapToItemDto(item));
+            itemsDto.add(ItemMapper.mapToItemDto(item));
         }
-        return items;
+        return itemsDto;
     }
 
     public ItemDto findItemById(long itemId) {
-        List<Item> itemById = new ArrayList<>();
-        for (List<Item> itemList : items.values()) {
-            itemById = itemList.stream()
-                    .filter(i -> i.getId() == itemId)
-                    .collect(Collectors.toList());
-        }
-        if (itemById.size() == 0) {
+        if (!storage.containsKey(itemId)) {
             throw new ItemDontExistsException("Предмет не найден.");
         }
-        ItemDto dto = ItemMapper.mapToItemDto(itemById.get(0));
+        ItemDto dto = ItemMapper.mapToItemDto(storage.get(itemId));
         return dto;
     }
 
     public List<ItemDto> findItemByName(String text) {
+        List<ItemDto> setOfItems = new ArrayList<>();
         Set<Item> result = new TreeSet<>((o1, o2) -> {
             long i = o1.getId() - o2.getId();
             return (int) i;
         });
-        List<ItemDto> setOfItems = new ArrayList<>();
-        List<Item> item1;
-        List<Item> item2;
-        for (List<Item> itemList : items.values()) {
-            item1 = itemList.stream()
-                    .filter(i -> i.getName().toLowerCase().contains(text))
-                    .filter(i -> i.getAvailable() == true)
-                    .collect(Collectors.toList());
-            result.addAll(item1);
-            item2 = itemList.stream()
-                    .filter(i -> i.getDescription().toLowerCase().contains(text))
-                    .filter(i -> i.getAvailable() == true)
-                    .collect(Collectors.toList());
-            result.addAll(item2);
-        }
+        List<Item> findInName = storage.values().stream()
+                .filter(i -> i.getName().toLowerCase().contains(text))
+                .filter(Item::isAvailable)
+                .collect(Collectors.toList());
+        result.addAll(findInName);
+        List<Item> findInDescription = storage.values().stream()
+                .filter(i -> i.getDescription().toLowerCase().contains(text))
+                .filter(Item::isAvailable)
+                .collect(Collectors.toList());
+        result.addAll(findInDescription);
         for (Item item : result) {
             setOfItems.add(ItemMapper.mapToItemDto(item));
         }
@@ -71,30 +62,28 @@ public class ItemRepository {
     }
 
     public ItemDto save(Item item) {
-        if (id == 0) {
-            id = getId();
-        }
-        long userIdFromRep = userRepository.findById(item.getUserId()).getId();
-        if (userIdFromRep == item.getUserId()) {
-            items.compute(item.getUserId(), (userId, userItems) -> {
-                if (userItems == null) {
-                    userItems = new ArrayList<>();
-                }
-                item.setId(id++);
-                userItems.add(item);
-                return userItems;
-            });
-            ItemDto dto = ItemMapper.mapToItemDto(item);
-            return dto;
-        } else {
-            throw new UserDontExistsException("Пользователя с ID " + item.getUserId() + " не существует");
-        }
+        userRepository.findById(item.getUserId());
+        items.compute(item.getUserId(), (userId, userItems) -> {
+            if (userItems == null) {
+                userItems = new ArrayList<>();
+            }
+            item.setId(++id);
+            userItems.add(item);
+            return userItems;
+        });
+        storage.put(item.getId(), item);
+        ItemDto dto = ItemMapper.mapToItemDto(item);
+        return dto;
+
     }
 
     public void deleteByUserIdAndItemId(long userId, long itemId) {
         if (items.containsKey(userId)) {
             List<Item> userItems = items.get(userId);
             userItems.removeIf(item -> item.getId().equals(itemId));
+        }
+        if (storage.containsKey(itemId)) {
+            storage.remove(itemId);
         }
     }
 
@@ -131,16 +120,6 @@ public class ItemRepository {
         }
         ItemDto dto = ItemMapper.mapToItemDto(updatedItem);
         return dto;
-    }
-
-    private long getId() {
-        long lastId = items.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .mapToLong(Item::getId)
-                .max()
-                .orElse(0);
-        return lastId + 1;
     }
 }
 
