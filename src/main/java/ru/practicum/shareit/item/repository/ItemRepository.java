@@ -23,12 +23,7 @@ public class ItemRepository {
     private final UserRepository userRepository;
 
     public List<ItemDto> findAll(long userId) {
-        List<Item> userItems = items.get(userId);
-        List<ItemDto> itemsDto = new ArrayList<>();
-        for (Item item : userItems) {
-            itemsDto.add(ItemMapper.mapToItemDto(item));
-        }
-        return itemsDto;
+        return items.get(userId).stream().map(ItemMapper:: mapToItemDto).collect(Collectors.toList());
     }
 
     public ItemDto findItemById(long itemId) {
@@ -40,24 +35,18 @@ public class ItemRepository {
     }
 
     public List<ItemDto> findItemByName(String text) {
-        List<ItemDto> setOfItems = new ArrayList<>();
+        List<ItemDto> setOfItems;
         Set<Item> result = new TreeSet<>((o1, o2) -> {
             long i = o1.getId() - o2.getId();
             return (int) i;
         });
-        List<Item> findInName = storage.values().stream()
-                .filter(i -> i.getName().toLowerCase().contains(text))
+        List<Item> findByText = storage.values().stream()
+                .filter(i -> i.getName().toLowerCase().contains(text)
+                        || i.getDescription().toLowerCase().contains(text))
                 .filter(Item::isAvailable)
                 .collect(Collectors.toList());
-        result.addAll(findInName);
-        List<Item> findInDescription = storage.values().stream()
-                .filter(i -> i.getDescription().toLowerCase().contains(text))
-                .filter(Item::isAvailable)
-                .collect(Collectors.toList());
-        result.addAll(findInDescription);
-        for (Item item : result) {
-            setOfItems.add(ItemMapper.mapToItemDto(item));
-        }
+        result.addAll(findByText);
+        setOfItems = result.stream().map(ItemMapper:: mapToItemDto).collect(Collectors.toList());
         return setOfItems;
     }
 
@@ -97,9 +86,7 @@ public class ItemRepository {
             throw new UserDontExistsException("Пользователя с ID " + userId + " нет.");
         }
 
-        userItem = userItem.stream()
-                .filter(i -> i.getId() == itemId)
-                .collect(Collectors.toList());
+        userItem = items.get(userId);
 
         if (userItem.size() != 0) {
             updatedItem = userItem.get(0);

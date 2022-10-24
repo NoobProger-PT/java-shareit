@@ -7,7 +7,6 @@ import ru.practicum.shareit.Marker;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Validated
@@ -35,17 +34,15 @@ public class ItemController {
     }
 
     @PostMapping
-    @Validated({Marker.Create.class})
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                       @Valid @RequestBody ItemDto itemDto) {
+                       @Validated({Marker.Create.class}) @RequestBody ItemDto itemDto) {
         return itemService.addNewItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    @Validated({Marker.Create.class})
     public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId,
                           @PathVariable long itemId,
-                          @RequestBody ItemDto itemDto) {
+                          @Validated({Marker.Update.class}) @RequestBody ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
