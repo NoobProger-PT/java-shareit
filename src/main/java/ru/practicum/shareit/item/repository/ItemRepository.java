@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ItemDontExistsException;
 import ru.practicum.shareit.exception.UserDontExistsException;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -22,20 +21,20 @@ public class ItemRepository {
 
     private final UserRepository userRepository;
 
-    public List<ItemDto> findAll(long userId) {
-        return items.get(userId).stream().map(ItemMapper:: mapToItemDto).collect(Collectors.toList());
+    public List<Item> findAll(long userId) {
+        return items.get(userId).stream().collect(Collectors.toList());
     }
 
-    public ItemDto findItemById(long itemId) {
+    public Item findItemById(long itemId) {
         if (!storage.containsKey(itemId)) {
             throw new ItemDontExistsException("Предмет не найден.");
         }
-        ItemDto dto = ItemMapper.mapToItemDto(storage.get(itemId));
-        return dto;
+        Item item = storage.get(itemId);
+        return item;
     }
 
-    public List<ItemDto> findItemByName(String text) {
-        List<ItemDto> setOfItems;
+    public List<Item> findItemByName(String text) {
+        List<Item> listOfItems;
         Set<Item> result = new TreeSet<>((o1, o2) -> {
             long i = o1.getId() - o2.getId();
             return (int) i;
@@ -46,11 +45,11 @@ public class ItemRepository {
                 .filter(Item::isAvailable)
                 .collect(Collectors.toList());
         result.addAll(findByText);
-        setOfItems = result.stream().map(ItemMapper:: mapToItemDto).collect(Collectors.toList());
-        return setOfItems;
+        listOfItems = result.stream().collect(Collectors.toList());
+        return listOfItems;
     }
 
-    public ItemDto save(Item item) {
+    public Item save(Item item) {
         userRepository.findById(item.getUserId());
         items.compute(item.getUserId(), (userId, userItems) -> {
             if (userItems == null) {
@@ -61,8 +60,7 @@ public class ItemRepository {
             return userItems;
         });
         storage.put(item.getId(), item);
-        ItemDto dto = ItemMapper.mapToItemDto(item);
-        return dto;
+        return item;
 
     }
 
@@ -76,7 +74,7 @@ public class ItemRepository {
         }
     }
 
-    public ItemDto update(long userId, long itemId, ItemDto itemDto) {
+    public Item update(long userId, long itemId, ItemDto itemDto) {
         List<Item> userItem;
         Item updatedItem;
 
@@ -105,8 +103,7 @@ public class ItemRepository {
         if (itemDto.getAvailable() != null) {
             updatedItem.setAvailable(itemDto.getAvailable());
         }
-        ItemDto dto = ItemMapper.mapToItemDto(updatedItem);
-        return dto;
+        return updatedItem;
     }
 }
 

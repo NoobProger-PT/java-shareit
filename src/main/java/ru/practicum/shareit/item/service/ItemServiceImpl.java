@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,18 +18,20 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
 
     public List<ItemDto> getItems(long userId) {
-        return repository.findAll(userId);
+        return new ArrayList<>(repository.findAll(userId).stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList()));
     }
 
     public ItemDto addNewItem(long userId, ItemDto itemDto) {
         itemDto.setUserId(userId);
         Item item = ItemMapper.mapToItem(itemDto, userId);
-        ItemDto dto = repository.save(item);
+        ItemDto dto = ItemMapper.mapToItemDto(repository.save(item));
         return dto;
     }
 
     public ItemDto findItemById(long itemId) {
-        ItemDto itemDto = repository.findItemById(itemId);
+        ItemDto itemDto = ItemMapper.mapToItemDto(repository.findItemById(itemId));
         return itemDto;
     }
 
@@ -39,13 +42,14 @@ public class ItemServiceImpl implements ItemService {
         } else {
             return new ArrayList<>();
         }
-        return repository.findItemByName(lowerCaseText);
+        return new ArrayList<>(repository.findItemByName(lowerCaseText).stream()
+                .map(ItemMapper::mapToItemDto).collect(Collectors.toList()));
     }
 
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         itemDto.setId(itemId);
         itemDto.setUserId(userId);
-        ItemDto dto = repository.update(userId, itemId, itemDto);
+        ItemDto dto = ItemMapper.mapToItemDto(repository.update(userId, itemId, itemDto));
         return dto;
     }
 

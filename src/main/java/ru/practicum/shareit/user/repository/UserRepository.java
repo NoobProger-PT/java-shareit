@@ -3,8 +3,6 @@ package ru.practicum.shareit.user.repository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.InvalidUser;
 import ru.practicum.shareit.exception.UserDontExistsException;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
@@ -16,12 +14,12 @@ public class UserRepository {
 
     private long id = 0;
 
-    public List<UserDto> findAll() {
-        List<UserDto> dtoList = new ArrayList<>();
+    public List<User> findAll() {
+        List<User> userList = new ArrayList<>();
         for (User user : users.values()) {
-            dtoList.add(UserMapper.mapToUserDto(user));
+            userList.add(user);
         }
-        return dtoList;
+        return userList;
     }
 
     public User findById(long id) {

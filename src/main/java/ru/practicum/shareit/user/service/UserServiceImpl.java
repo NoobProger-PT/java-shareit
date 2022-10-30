@@ -7,7 +7,9 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +18,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     public List<UserDto> getAllUsers() {
-        return repository.findAll();
+        return new ArrayList<>(repository.findAll().stream()
+                .map(UserMapper::mapToUserDto)
+                .collect(Collectors.toList()));
     }
 
     public UserDto getById(long id) {
