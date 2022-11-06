@@ -1,6 +1,5 @@
 package ru.practicum.shareit.exception;
 
-import com.sun.xml.txw2.IllegalAnnotationException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;

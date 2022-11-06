@@ -121,8 +121,8 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Такого пользователя нет."));
-        Booking booking = bookingRepository.
-                findByItemIdAndBookerIdAndEndDateBefore(itemId, userId, LocalDateTime.now());
+        Booking booking = bookingRepository
+                .findByItemIdAndBookerIdAndEndDateBefore(itemId, userId, LocalDateTime.now());
         if (booking == null) {
             throw new RequestException("Данный пользователь не арендовал этот предмет.");
         }
