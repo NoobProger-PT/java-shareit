@@ -1,17 +1,25 @@
 package ru.practicum.shareit.exception;
 
+import com.sun.xml.txw2.IllegalAnnotationException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.user.controller.UserController;
 
+import java.util.NoSuchElementException;
+
+
 @Slf4j
-@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class})
 public class ErrorHandler {
 
     @ExceptionHandler
@@ -51,8 +59,44 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity badRequest(final RequestException e) {
+        log.info("Неверно заполнены данные. {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity linkError(final ConstraintViolationException e) {
+        log.info("Ошибка в ссылочной связи. {}", e.getMessage());
+        return new ResponseEntity<>("Не найдена связь между сущностями.", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity noElementException(final NoSuchElementException e) {
+        log.info("Нет совпадений. {}", e.getMessage());
+        return new ResponseEntity<>("Поиск не дал результатов", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity illegalException(final MethodArgumentTypeMismatchException e) {
+        String exceptionName = "Unknown state: UNSUPPORTED_STATUS";
+        log.info("Переданы неверные данные. {}", e.getMessage());
+        return new ResponseEntity<>(
+                new ErrorResponse(exceptionName), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<String> serverException(Throwable ex) {
         log.info("Ошибка на сервере. {}", ex.getMessage());
-        return new ResponseEntity<>("Ошибка сервера", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Ошибка сервера", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Getter
+    static class ErrorResponse {
+
+        private final String error;
+
+        public ErrorResponse(String errorName) {
+            this.error = errorName;
+        }
     }
 }

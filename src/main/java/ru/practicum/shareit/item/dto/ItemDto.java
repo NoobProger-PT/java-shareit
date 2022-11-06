@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ItemDto {
     private Long id;
-    private Long userId;
+    private Long ownerId;
     @NotBlank(groups = {Marker.Create.class})
     private String name;
     @NotBlank(groups = {Marker.Create.class})
