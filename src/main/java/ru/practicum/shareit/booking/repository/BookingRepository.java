@@ -1,41 +1,41 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findAllByBookerIdOrderByStartDateDesc(long userId);
+    List<Booking> findAllByBookerId(long userId, Sort sort);
 
-    List<Booking> findAllByBookerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
-            long userId, LocalDateTime localDate1, LocalDateTime localDate2);
+    List<Booking> findAllByBookerIdAndStartDateBeforeAndEndDateAfter(
+            long userId, LocalDateTime localDate1, LocalDateTime localDate2, Sort sort);
 
-    List<Booking> findAllByBookerIdAndEndDateBeforeOrderByStartDateDesc(long userId,
-                                                                        LocalDateTime localDate);
+    List<Booking> findAllByBookerIdAndEndDateBefore(long userId, LocalDateTime localDate, Sort sort);
 
-    List<Booking> findAllByBookerIdAndStartDateAfterOrderByStartDateDesc(long userId, LocalDateTime localDate);
+    List<Booking> findAllByBookerIdAndStartDateAfter(long userId, LocalDateTime localDate, Sort sort);
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(long bookerId, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatus(long bookerId, BookingStatus status, Sort sort);
 
-    List<Booking> findAllByItemIdInOrderByStartDateDesc(List<Long> ids);
+    List<Booking> findAllByItemIdIn(List<Long> ids, Sort sort);
 
-    List<Booking> findAllByItemIdInAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
-            List<Long> id, LocalDateTime localDate1, LocalDateTime localDate2);
+    List<Booking> findAllByItemIdInAndStartDateBeforeAndEndDateAfter(
+            List<Long> id, LocalDateTime localDate1, LocalDateTime localDate2, Sort sort);
 
-    List<Booking> findAllByItemIdInAndEndDateBeforeOrderByStartDateDesc(List<Long> id,
-                                                                        LocalDateTime localDate);
+    List<Booking> findAllByItemIdInAndEndDateBefore(List<Long> id, LocalDateTime localDate, Sort sort);
 
-    List<Booking> findAllByItemIdInAndStartDateAfterOrderByStartDateDesc(List<Long> id, LocalDateTime localDate);
+    List<Booking> findAllByItemIdInAndStartDateAfter(List<Long> id, LocalDateTime localDate, Sort sort);
 
-    List<Booking> findAllByItemIdInAndStatusOrderByStartDateDesc(List<Long> id, BookingStatus status);
+    List<Booking> findAllByItemIdInAndStatus(List<Long> id, BookingStatus status, Sort sort);
 
-    Booking findByItemIdAndEndDateBeforeOrderByEndDateDesc(long itemId, LocalDateTime localDate);
+    Booking findByItemIdAndEndDateBefore(long itemId, LocalDateTime localDate, Sort sort);
 
-    Booking findByItemIdAndStartDateAfterOrderByEndDateAsc(long itemId, LocalDateTime localDate);
+    Booking findByItemIdAndStartDateAfter(long itemId, LocalDateTime localDate, Sort sort);
 
-    Booking findByItemIdAndBookerIdAndEndDateBefore(long itemId, long bookerId, LocalDateTime dateTime);
+    Optional<Booking> findByItemIdAndBookerIdAndEndDateBefore(long itemId, long bookerId, LocalDateTime dateTime);
 }

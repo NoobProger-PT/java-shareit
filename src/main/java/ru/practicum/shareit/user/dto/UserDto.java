@@ -20,4 +20,8 @@ public class UserDto {
     @NotNull(groups = {Marker.Create.class})
     @Email(groups = {Marker.Create.class, Marker.Update.class})
     private String email;
+
+    public UserDto(long id) {
+        this.id = id;
+    }
 }
