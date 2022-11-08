@@ -56,13 +56,13 @@ public class ItemServiceImpl implements ItemService {
                 .map(i -> ItemMapper.mapToItemWithBookingDto(i))
                 .map(i -> {
                     for (Booking b : last) {
-                        if (i.getId() == b.getItem().getId()) {
+                        if (i.getId().longValue() == b.getItem().getId().longValue()) {
                             i.setLastBooking(BookingMapper.mapToShortDto(b));
                         }
                         break;
                     }
                     for (Booking b : next) {
-                        if (i.getId() == b.getItem().getId()) {
+                        if (i.getId().longValue() == b.getItem().getId().longValue()) {
                             i.setNextBooking(BookingMapper.mapToShortDto(b));
                         }
                         break;
