@@ -61,9 +61,6 @@ public class ItemServiceImpl implements ItemService {
                         }
                         break;
                     }
-                    return i;
-                })
-                .map(i -> {
                     for (Booking b : next) {
                         if (i.getId() == b.getItem().getId()) {
                             i.setNextBooking(BookingMapper.mapToShortDto(b));
