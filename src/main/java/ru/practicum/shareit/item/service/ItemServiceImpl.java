@@ -53,22 +53,25 @@ public class ItemServiceImpl implements ItemService {
                         Sort.by(Sort.Direction.DESC, "item_id"));
 
         result = items.stream()
+                .map(i -> ItemMapper.mapToItemWithBookingDto(i))
                 .map(i -> {
-                    ItemWithBookingDto item = ItemMapper.mapToItemWithBookingDto(i);
                     for (Booking b : last) {
                         if (i.getId() == b.getItem().getId()) {
-                            item.setLastBooking(BookingMapper.mapToShortDto(b));
+                            i.setLastBooking(BookingMapper.mapToShortDto(b));
                         }
                         break;
                     }
+                    return i;
+                })
+                .map(i -> {
                     for (Booking b : next) {
                         if (i.getId() == b.getItem().getId()) {
-                            item.setNextBooking(BookingMapper.mapToShortDto(b));
+                            i.setNextBooking(BookingMapper.mapToShortDto(b));
                         }
                         break;
                     }
-                    return item;
-        }).collect(Collectors.toList());
+                    return i;
+                }).collect(Collectors.toList());
         return result;
     }
 
