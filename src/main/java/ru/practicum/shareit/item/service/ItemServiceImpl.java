@@ -44,8 +44,8 @@ public class ItemServiceImpl implements ItemService {
         List<ItemWithBookingDto> result;
         List<ItemDto> items = itemRepository.findAllByOwnerId(userId).stream()
                 .map(ItemMapper::mapToItemDto)
-                .sorted(Comparator.comparing(ItemDto::getId)).
-                collect(Collectors.toList());
+                .sorted(Comparator.comparing(ItemDto::getId))
+                .collect(Collectors.toList());
         List<Long> itemId = items.stream().map(i -> i.getId()).collect(Collectors.toList());
         List<Booking> last = bookingRepository.findAllByItemIdInAndEndDateBefore(itemId, LocalDateTime.now(),
                 Sort.by(Sort.Direction.DESC, "item_id"));
