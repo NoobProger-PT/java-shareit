@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -28,6 +29,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,25 +49,27 @@ public class ItemServiceImpl implements ItemService {
                 .sorted(Comparator.comparing(ItemDto::getId))
                 .collect(Collectors.toList());
         List<Long> itemId = items.stream().map(i -> i.getId()).collect(Collectors.toList());
-        List<Booking> last = bookingRepository.findAllByItemIdInAndEndDateBefore(itemId, LocalDateTime.now(),
-                Sort.by(Sort.Direction.DESC, "item_id"));
-        List<Booking> next = bookingRepository.findAllByItemIdInAndStartDateAfter(itemId, LocalDateTime.now(),
-                        Sort.by(Sort.Direction.DESC, "item_id"));
+        List<Booking> last = bookingRepository.findAllByItemIdInAndEndDateBeforeAndStatus(itemId, LocalDateTime.now(),
+                BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "startDate"));
+        List<Booking> next = bookingRepository.findAllByItemIdInAndStartDateAfterAndStatus(itemId, LocalDateTime.now(),
+                BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "startDate"));
 
         result = items.stream()
                 .map(i -> ItemMapper.mapToItemWithBookingDto(i))
                 .map(i -> {
                     for (Booking b : last) {
-                        if (i.getId().longValue() == b.getItem().getId().longValue()) {
+                        ItemDto dto = ItemMapper.mapToItemDto(b.getItem());
+                        if (Objects.equals(i, ItemMapper.mapToItemWithBookingDto(dto))) {
                             i.setLastBooking(BookingMapper.mapToShortDto(b));
+                            break;
                         }
-                        break;
                     }
                     for (Booking b : next) {
-                        if (i.getId().longValue() == b.getItem().getId().longValue()) {
+                        ItemDto dto = ItemMapper.mapToItemDto(b.getItem());
+                        if (Objects.equals(i, ItemMapper.mapToItemWithBookingDto(dto))) {
                             i.setNextBooking(BookingMapper.mapToShortDto(b));
+                            break;
                         }
-                        break;
                     }
                     return i;
                 }).collect(Collectors.toList());
