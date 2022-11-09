@@ -58,15 +58,13 @@ public class ItemServiceImpl implements ItemService {
                 .map(i -> ItemMapper.mapToItemWithBookingDto(i))
                 .map(i -> {
                     for (Booking b : last) {
-                        ItemDto dto = ItemMapper.mapToItemDto(b.getItem());
-                        if (Objects.equals(i, ItemMapper.mapToItemWithBookingDto(dto))) {
+                        if (Objects.equals(i.getId(), b.getItem().getId())) {
                             i.setLastBooking(BookingMapper.mapToShortDto(b));
                             break;
                         }
                     }
                     for (Booking b : next) {
-                        ItemDto dto = ItemMapper.mapToItemDto(b.getItem());
-                        if (Objects.equals(i, ItemMapper.mapToItemWithBookingDto(dto))) {
+                        if (Objects.equals(i.getId(), b.getItem().getId())) {
                             i.setNextBooking(BookingMapper.mapToShortDto(b));
                             break;
                         }
