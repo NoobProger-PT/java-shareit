@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.Marker;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ItemDto {
     private Long id;
-    private Long userId;
+    private UserDto owner;
     @NotBlank(groups = {Marker.Create.class})
     private String name;
     @NotBlank(groups = {Marker.Create.class})

@@ -9,37 +9,37 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
+
 public class UserController {
 
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserDto> getAll() {
+        return userService.getAll();
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable long userId) {
+    public UserDto getById(@PathVariable long userId) {
         return userService.getById(userId);
     }
 
     @PostMapping
-    public UserDto saveNewUser(@Validated({Marker.Create.class}) @RequestBody UserDto userDto) {
-        return userService.saveUser(userDto);
+    public UserDto saveNew(@Validated({Marker.Create.class}) @RequestBody UserDto userDto) {
+        return userService.save(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@Validated({Marker.Update.class}) @RequestBody UserDto userDto,
+    public UserDto update(@Validated({Marker.Update.class}) @RequestBody UserDto userDto,
                               @PathVariable long userId) {
-        return userService.updateUser(userId, userDto);
+        return userService.update(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable long userId) {
-        userService.deleteUser(userId);
+    public void delete(@PathVariable long userId) {
+        userService.delete(userId);
     }
 }
