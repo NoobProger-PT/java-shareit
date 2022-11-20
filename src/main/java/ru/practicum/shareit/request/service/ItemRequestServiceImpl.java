@@ -86,14 +86,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .map(ItemRequestMapper::mapToDto)
                 .collect(groupingBy(ItemRequestDto::getId));
         List<Long> itemRequestId = new ArrayList<>(itemRequestsMap.keySet());
-        Map<Long, List<ItemDto>> ItemMap = itemRepository
+        Map<Long, List<ItemDto>> itemMap = itemRepository
                 .findAllByRequestIdIn(itemRequestId).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(groupingBy(ItemDto::getRequestId));
         List<ItemRequestDto> itemRequestlist = new ArrayList<>();
         for (Long id : itemRequestsMap.keySet()) {
-            if (ItemMap.containsKey(id)) {
-                itemRequestsMap.get(id).get(0).addItemInList(ItemMap.get(id).get(0));
+            if (itemMap.containsKey(id)) {
+                itemRequestsMap.get(id).get(0).addItemInList(itemMap.get(id).get(0));
             }
             itemRequestlist.add(itemRequestsMap.get(id).get(0));
         }
