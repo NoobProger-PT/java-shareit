@@ -2,8 +2,6 @@ package ru.practicum.shareit.item.model;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ru.practicum.shareit.booking.dto.BookingDtoShort;
-import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
