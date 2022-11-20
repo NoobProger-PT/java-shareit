@@ -181,7 +181,7 @@ class ItemControllerTest {
     }
 
     @Test
-    public void shouldUpdate() throws Exception{
+    public void shouldUpdate() throws Exception {
         when(itemService.update(anyLong(), anyLong(), any()))
                 .thenReturn(itemDto);
 

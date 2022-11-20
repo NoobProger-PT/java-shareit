@@ -64,14 +64,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         for (Long id : itemRequestsMap.keySet()) {
             itemRequestId.add(id);
         }
-        Map<Long, List<ItemDto>> ItemMap = itemRepository
+        Map<Long, List<ItemDto>> itemMap = itemRepository
                 .findAllByRequestIdIn(itemRequestId).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(groupingBy(ItemDto::getRequestId));
         List<ItemRequestDto> result = new ArrayList<>();
         for (Long id : itemRequestsMap.keySet()) {
-            if (ItemMap.containsKey(id)) {
-                itemRequestsMap.get(id).get(0).addItemInList(ItemMap.get(id).get(0));
+            if (itemMap.containsKey(id)) {
+                itemRequestsMap.get(id).get(0).addItemInList(itemMap.get(id).get(0));
             }
             result.add(itemRequestsMap.get(id).get(0));
         }
@@ -90,19 +90,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .findAllByRequestIdIn(itemRequestId).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(groupingBy(ItemDto::getRequestId));
-        List<ItemRequestDto> ItemRequestlist = new ArrayList<>();
+        List<ItemRequestDto> itemRequestlist = new ArrayList<>();
         for (Long id : itemRequestsMap.keySet()) {
             if (ItemMap.containsKey(id)) {
                 itemRequestsMap.get(id).get(0).addItemInList(ItemMap.get(id).get(0));
             }
-            ItemRequestlist.add(itemRequestsMap.get(id).get(0));
+            itemRequestlist.add(itemRequestsMap.get(id).get(0));
         }
         List<ItemRequestDto> result = new ArrayList<>();
         for (int i = from; i <= size; i++) {
-            if (i >= ItemRequestlist.size()) {
+            if (i >= itemRequestlist.size()) {
                 break;
             }
-            result.add(ItemRequestlist.get(i));
+            result.add(itemRequestlist.get(i));
         }
         return result;
     }

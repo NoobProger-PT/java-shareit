@@ -78,7 +78,7 @@ class BookingControllerTest {
 
     @Test
     void getAllByUser() throws Exception {
-        when(bookingService.getAllByUser(anyLong(), any() ,anyInt(), anyInt()))
+        when(bookingService.getAllByUser(anyLong(), any(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
         mvc.perform(get("/bookings")
@@ -95,7 +95,7 @@ class BookingControllerTest {
 
     @Test
     void getAllByUserWithWrongParams() throws Exception {
-        when(bookingService.getAllByUser(anyLong(), any() ,anyInt(), anyInt()))
+        when(bookingService.getAllByUser(anyLong(), any(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
         mvc.perform(get("/bookings?from=-1&size=-2")
@@ -108,7 +108,7 @@ class BookingControllerTest {
 
     @Test
     void getAllByOwner() throws Exception {
-        when(bookingService.getAllByOwner(anyLong(), any() ,anyInt(), anyInt()))
+        when(bookingService.getAllByOwner(anyLong(), any(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
         mvc.perform(get("/bookings/owner")
