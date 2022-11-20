@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.user.controller.UserController;
 
 import java.util.NoSuchElementException;
 
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class,
+                                        ItemRequestController.class})
 public class ErrorHandler {
 
     @ExceptionHandler

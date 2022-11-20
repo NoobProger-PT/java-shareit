@@ -27,14 +27,20 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllByUser(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                @RequestParam(defaultValue = "ALL") BookingState state) {
-        return bookingService.getAllByUser(userId, state);
+                                                @RequestParam(defaultValue = "ALL") BookingState state,
+                                         @RequestParam(defaultValue = "0") int from,
+                                         @RequestParam(defaultValue = "10") int size) {
+        checkParameters(from, size);
+        return bookingService.getAllByUser(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                 @RequestParam(defaultValue = "ALL") BookingState state) {
-        return bookingService.getAllByOwner(userId, state);
+                                                 @RequestParam(defaultValue = "ALL") BookingState state,
+                                          @RequestParam(defaultValue = "0") int from,
+                                          @RequestParam(defaultValue = "10") int size) {
+        checkParameters(from, size);
+        return bookingService.getAllByOwner(userId, state, from, size);
     }
 
     @PostMapping
@@ -51,5 +57,11 @@ public class BookingController {
                                   @PathVariable long bookingId,
                                   @RequestParam boolean approved) {
         return bookingService.makeApprove(userId, bookingId, approved);
+    }
+
+    private void checkParameters(int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new RequestException("Неверно заполнены данные параметра страницы.");
+        }
     }
 }

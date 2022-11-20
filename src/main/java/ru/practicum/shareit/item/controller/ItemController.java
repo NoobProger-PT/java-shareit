@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Marker;
+import ru.practicum.shareit.exception.RequestException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingAndCommentDto;
@@ -19,8 +20,13 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemWithBookingDto> get(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getAll(userId);
+    public List<ItemWithBookingDto> get(@RequestHeader("X-Sharer-User-Id") long userId,
+                                        @RequestParam(defaultValue = "0") int from,
+                                        @RequestParam(defaultValue = "10") int size) {
+        if (from < 0 || size <= 0) {
+            throw new RequestException("Неверно заполнены данные параметра страницы.");
+        }
+        return itemService.getAll(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -31,11 +37,16 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> getByText(@RequestHeader("X-Sharer-User-Id") long userId,
-                                  @RequestParam String text) {
+                                  @RequestParam String text,
+                                   @RequestParam(defaultValue = "0") int from,
+                                   @RequestParam(defaultValue = "10") int size) {
         if (text.isBlank()) {
             return List.of();
         }
-        return itemService.findByText(text);
+        if (from < 0 || size <= 0) {
+            throw new RequestException("Неверно заполнены данные параметра страницы.");
+        }
+        return itemService.findByText(text, from, size);
     }
 
     @PostMapping

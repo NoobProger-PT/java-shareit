@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -41,11 +42,11 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToDto(booking);
     }
 
-    public List<BookingDto> getAllByUser(long userId, BookingState state) {
+    public List<BookingDto> getAllByUser(long userId, BookingState state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Пользователь с id " + userId + " не найден."));
 
-        List<Booking> bookings;
+        List<Booking> bookings = new ArrayList<>();
 
         switch (state) {
             case ALL:
@@ -72,15 +73,18 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByBookerIdAndStatus(userId,
                         BookingStatus.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
                 break;
-            default:
-                bookings = List.of();
         }
-        return bookings.stream()
-                .map(BookingMapper::mapToDto)
-                .collect(Collectors.toList());
+        List<BookingDto> toPrint = new ArrayList<>();
+        for (int i = from; i <= size; i++) {
+            if (i >= bookings.size()) {
+                break;
+            }
+            toPrint.add(BookingMapper.mapToDto(bookings.get(i)));
+        }
+        return toPrint;
     }
 
-    public List<BookingDto> getAllByOwner(long userId, BookingState state) {
+    public List<BookingDto> getAllByOwner(long userId, BookingState state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Пользователь с id " + userId + " не найден."));
 
@@ -88,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
                 .map(Item::getId)
                 .collect(Collectors.toList());
 
-        List<Booking> bookings;
+        List<Booking> bookings = new ArrayList<>();
 
         switch (state) {
             case ALL:
@@ -115,12 +119,15 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByItemIdInAndStatus(userItems,
                         BookingStatus.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
                 break;
-            default:
-                bookings = List.of();
         }
-        return bookings.stream()
-                .map(BookingMapper::mapToDto)
-                .collect(Collectors.toList());
+        List<BookingDto> toPrint = new ArrayList<>();
+        for (int i = from; i <= size; i++) {
+            if (i >= bookings.size()) {
+                break;
+            }
+            toPrint.add(BookingMapper.mapToDto(bookings.get(i)));
+        }
+        return toPrint;
     }
 
     @Transactional

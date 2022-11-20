@@ -22,11 +22,13 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -41,8 +43,9 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
-    public List<ItemWithBookingDto> getAll(long userId) {
+    public List<ItemWithBookingDto> getAll(long userId, int from, int size) {
         List<ItemWithBookingDto> result;
         List<ItemDto> items = itemRepository.findAllByOwnerId(userId).stream()
                 .map(ItemMapper::mapToItemDto)
@@ -71,7 +74,14 @@ public class ItemServiceImpl implements ItemService {
                     }
                     return i;
                 }).collect(Collectors.toList());
-        return result;
+        List<ItemWithBookingDto> toPrint = new ArrayList<>();
+        for (int i = from; i <= size; i++) {
+            if (i >= result.size()) {
+                break;
+            }
+            toPrint.add(result.get(i));
+        }
+        return toPrint;
     }
 
     @Transactional
@@ -79,7 +89,8 @@ public class ItemServiceImpl implements ItemService {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Пользователя с id " + userId + " не существует."));
         Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userId));
-        return ItemMapper.mapToItemDto(item);
+            return ItemMapper.mapToItemDto(item);
+
     }
 
     public ItemWithBookingAndCommentDto findById(long itemId, long userId) {
@@ -102,10 +113,19 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemBookingCommentDto(itemWithBookingDto, comments);
     }
 
-    public List<ItemDto> findByText(String text) {
-        return itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(text, text, true).stream()
+    public List<ItemDto> findByText(String text, int from, int size) {
+        List<ItemDto> result = itemRepository
+                .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(text, text, true).stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
+        List<ItemDto> toPrint = new ArrayList<>();
+        for (int i = from; i <= size; i++) {
+            if (i >= result.size()) {
+                break;
+            }
+            toPrint.add(result.get(i));
+        }
+        return toPrint;
     }
 
     @Transactional
@@ -137,12 +157,9 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Такого пользователя нет."));
-        Booking booking = bookingRepository.findByItemIdAndBookerIdAndEndDateBefore(
+        bookingRepository.findByItemIdAndBookerIdAndEndDateBefore(
                 itemId, userId, LocalDateTime.now()).orElseThrow(() ->
                 new RequestException("Данный пользователь не арендовал этот предмет."));
-        if (booking == null) {
-            throw new RequestException("Данный пользователь не арендовал этот предмет.");
-        }
         Comment comment = commentRepository.save(CommentMapper.mapToComment(commentDto, itemId, userId));
         comment.setUser(user);
         return CommentMapper.mapToDto(comment);

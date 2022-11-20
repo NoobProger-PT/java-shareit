@@ -21,4 +21,9 @@ public class ItemDto {
     private String description;
     @NotNull(groups = {Marker.Create.class})
     private Boolean available;
+    private Long requestId;
+
+    public ItemDto(long id) {
+        this.id = id;
+    }
 }
