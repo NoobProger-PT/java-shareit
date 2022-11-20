@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BookingTest {
 
-    private final static Booking booking = new Booking();
-    private final static Booking booking2 = new Booking();
+    private static final Booking booking = new Booking();
+    private static final Booking booking2 = new Booking();
 
     @BeforeAll
     public static void createData() {
