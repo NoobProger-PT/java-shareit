@@ -24,8 +24,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
@@ -38,12 +37,12 @@ class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private ItemWithBookingDto itemWithBookingDto = new ItemWithBookingDto();
-    private ItemWithBookingAndCommentDto itemWithBookingAndCommentDto = new ItemWithBookingAndCommentDto();
-    private ItemDto itemDto = new ItemDto();
-    private BookingDtoShort lastBooking = new BookingDtoShort();
-    private BookingDtoShort nextBooking = new BookingDtoShort();
-    private CommentDto commentDto = new CommentDto();
+    private final ItemWithBookingDto itemWithBookingDto = new ItemWithBookingDto();
+    private final ItemWithBookingAndCommentDto itemWithBookingAndCommentDto = new ItemWithBookingAndCommentDto();
+    private final ItemDto itemDto = new ItemDto();
+    private final BookingDtoShort lastBooking = new BookingDtoShort();
+    private final BookingDtoShort nextBooking = new BookingDtoShort();
+    private final CommentDto commentDto = new CommentDto();
 
     @BeforeEach
     public void createItemAndCommentDto() {
@@ -126,6 +125,19 @@ class ItemControllerTest {
     }
 
     @Test
+    public void shouldGetAllWithWrongFromAndSize() throws Exception {
+        when(itemService.findById(anyLong(), anyLong()))
+                .thenReturn(itemWithBookingAndCommentDto);
+
+        mvc.perform(get("/items?from=-1&size=-1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void shouldGetAllByText() throws Exception {
         when(itemService.findByText(anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemDto));
@@ -142,6 +154,20 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())))
                 .andExpect(jsonPath("$[0].requestId", is(itemDto.getRequestId().intValue())));
+    }
+
+    @Test
+    public void shouldGetAllByWrongText() throws Exception {
+        when(itemService.findByText(anyString(), anyInt(), anyInt()))
+                .thenReturn(List.of(itemDto));
+
+        mvc.perform(get("/items/search?text=")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 20L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(List.of())));
     }
 
     @Test
@@ -197,5 +223,15 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())))
                 .andExpect(jsonPath("$.owner.id", is(itemDto.getOwner().getId().intValue())));
+    }
+
+    @Test
+    public void shouldDelete() throws Exception {
+        mvc.perform(delete("/items/1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 20L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

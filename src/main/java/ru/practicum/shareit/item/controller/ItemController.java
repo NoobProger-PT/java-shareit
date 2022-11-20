@@ -23,9 +23,7 @@ public class ItemController {
     public List<ItemWithBookingDto> get(@RequestHeader("X-Sharer-User-Id") long userId,
                                         @RequestParam(defaultValue = "0") int from,
                                         @RequestParam(defaultValue = "10") int size) {
-        if (from < 0 || size <= 0) {
-            throw new RequestException("Неверно заполнены данные параметра страницы.");
-        }
+        checkInputParam(from, size);
         return itemService.getAll(userId, from, size);
     }
 
@@ -43,9 +41,7 @@ public class ItemController {
         if (text.isBlank()) {
             return List.of();
         }
-        if (from < 0 || size <= 0) {
-            throw new RequestException("Неверно заполнены данные параметра страницы.");
-        }
+        checkInputParam(from, size);
         return itemService.findByText(text, from, size);
     }
 
@@ -73,5 +69,11 @@ public class ItemController {
     public void delete(@RequestHeader("X-Sharer-User-Id") long userId,
                            @PathVariable long itemId) {
         itemService.delete(userId, itemId);
+    }
+
+    private void checkInputParam(int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new RequestException("Неверно заполнены данные параметра страницы.");
+        }
     }
 }

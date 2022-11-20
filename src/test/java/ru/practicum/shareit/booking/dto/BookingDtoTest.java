@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JsonTest
 class BookingDtoTest {
@@ -38,5 +39,14 @@ class BookingDtoTest {
         assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo("APPROVED");
         assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("2024-10-10T10:10:00");
         assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo("2025-10-10T10:10:00");
+        assertEquals(10L, bookingDto.getId());
+        bookingDto.setId(15L);
+        assertEquals(15L, bookingDto.getId());
+    }
+
+    @Test
+    public void shouldCreateEmptyClass() {
+        BookingDto bookingDto = new BookingDto();
+        assertEquals(null, bookingDto.getId());
     }
 }

@@ -36,8 +36,8 @@ class ItemRequestControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private InputItemRequestDto inputDto = new InputItemRequestDto();
-    private ItemRequestDto itemRequestDto = new ItemRequestDto();
+    private final InputItemRequestDto inputDto = new InputItemRequestDto();
+    private final ItemRequestDto itemRequestDto = new ItemRequestDto();
 
     @BeforeEach
     public void createItemAndCommentDto() {
@@ -98,6 +98,19 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].description", is(itemRequestDto.getDescription())))
                 .andExpect(jsonPath("$[0].items[0].id", is(itemRequestDto.getItems()
                         .get(0).getId().intValue())));
+    }
+
+    @Test
+    public void getAllWithWrongFrom() throws Exception {
+        when(itemRequestService.getByFromAndSize(anyInt(), anyInt(), anyLong()))
+                .thenReturn(List.of(itemRequestDto));
+
+        mvc.perform(get("/requests/all?from=-1&size=-1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

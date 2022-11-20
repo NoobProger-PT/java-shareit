@@ -16,10 +16,10 @@ public class UserMapper {
     }
 
     public static UserDto mapToUserDto(User user) {
-        return new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
+        UserDto dto = new UserDto();
+        dto.setEmail(user.getEmail());
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        return dto;
     }
 }

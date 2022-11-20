@@ -18,14 +18,14 @@ public class ItemJsonTest {
 
     @Test
     public void shouldReturnCorrectJson() throws Exception {
-        ItemDto itemDto = new ItemDto(
-                10L,
-                new UserDto(1L),
-                "name",
-                "desc",
-                true,
-                5L
-        );
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(10L);
+        itemDto.setOwner(new UserDto(1L));
+        itemDto.setName("name");
+        itemDto.setDescription("desc");
+        itemDto.setAvailable(true);
+        itemDto.setRequestId(5L);
+
 
         JsonContent<ItemDto> result = json.write(itemDto);
 

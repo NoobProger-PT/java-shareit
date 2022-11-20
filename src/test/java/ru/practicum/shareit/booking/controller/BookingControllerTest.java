@@ -37,9 +37,9 @@ class BookingControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private BookingDto bookingDto = new BookingDto();
-    private InputBookingDto inputBookingDto = new InputBookingDto();
-    private InputBookingDto inputBookingDto2 = new InputBookingDto();
+    private final BookingDto bookingDto = new BookingDto();
+    private final InputBookingDto inputBookingDto = new InputBookingDto();
+    private final InputBookingDto inputBookingDto2 = new InputBookingDto();
 
     @BeforeEach
     public void createBookingDto() {
@@ -55,8 +55,8 @@ class BookingControllerTest {
         inputBookingDto.setStart(LocalDateTime.of(2023, 01, 10, 10, 10));
 
         inputBookingDto2.setItemId(1L);
-        inputBookingDto2.setEnd(LocalDateTime.of(2019, 01, 10, 10, 10));
-        inputBookingDto2.setStart(LocalDateTime.of(2020, 01, 10, 10, 10));
+        inputBookingDto2.setEnd(LocalDateTime.of(2025, 01, 10, 10, 10));
+        inputBookingDto2.setStart(LocalDateTime.of(2026, 01, 10, 10, 10));
     }
 
     @Test

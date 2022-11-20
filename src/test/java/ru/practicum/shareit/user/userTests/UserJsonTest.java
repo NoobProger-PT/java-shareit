@@ -16,11 +16,10 @@ public class UserJsonTest {
 
     @Test
     public void shouldReturnCorrectJson() throws Exception {
-        UserDto userDto = new UserDto(
-                10L,
-                "name",
-                "mail@mail.mail"
-        );
+        UserDto userDto = new UserDto();
+        userDto.setId(10L);
+        userDto.setName("name");
+        userDto.setEmail("mail@mail.mail");
 
         JsonContent<UserDto> result = json.write(userDto);
 

@@ -33,7 +33,7 @@ class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private UserDto userDto = new UserDto();
+    private final UserDto userDto = new UserDto();
 
     @BeforeEach
     public void createUserDto() {
@@ -106,5 +106,15 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(userDto.getId().intValue())))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+    }
+
+    @Test
+    public void shouldDelete() throws Exception {
+        mvc.perform(delete("/users/1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 20L)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }
