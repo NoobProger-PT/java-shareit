@@ -70,6 +70,11 @@ class BookingMapperTest {
     void mapToDto() {
         BookingDto dto = BookingMapper.mapToDto(booking);
         assertEquals(booking.getId(), dto.getId());
+        assertEquals(booking.getStatus(), dto.getStatus());
+        assertEquals(booking.getItem().getId(), dto.getItem().getId());
+        assertEquals(booking.getBooker().getName(), dto.getBooker().getName());
+        assertEquals(booking.getEndDate(), dto.getEnd());
+        assertEquals(booking.getStartDate(), dto.getStart());
     }
 
     @Test
@@ -82,6 +87,7 @@ class BookingMapperTest {
     void mapToShortDto() {
         BookingDtoShort bookingDtoShort = BookingMapper.mapToShortDto(booking);
         assertEquals(bookingDtoShort.getId(), booking.getId());
+        assertEquals(bookingDtoShort.getBookerId(), booking.getBooker().getId());
     }
 
     @Test

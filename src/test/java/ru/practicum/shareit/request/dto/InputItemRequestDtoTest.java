@@ -1,28 +1,25 @@
 package ru.practicum.shareit.request.dto;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@JsonTest
 class InputItemRequestDtoTest {
 
-    private static final InputItemRequestDto dto = new InputItemRequestDto();
-    private static final InputItemRequestDto dto1 = new InputItemRequestDto();
+    @Autowired
+    private JacksonTester<InputItemRequestDto> json;
 
-    @BeforeAll
-    public static void createShortDto() {
+    @Test
+    void testSerialize() throws Exception {
+        var dto = new InputItemRequestDto();
         dto.setDescription("desc");
-    }
 
-    @Test
-    void getDescription() {
-        assertEquals("desc", dto.getDescription());
-    }
-
-    @Test
-    void setDescription() {
-        dto1.setDescription("desc1");
-        assertEquals("desc1", dto1.getDescription());
+        var result = json.write(dto);
+        assertThat(result).hasJsonPath("$.description");
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(dto.getDescription());
     }
 }

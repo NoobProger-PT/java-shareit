@@ -2,39 +2,29 @@ package ru.practicum.shareit.booking.dto;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@JsonTest
 class BookingDtoShortTest {
-
-    private static final BookingDtoShort bookingDtoShort1 = new BookingDtoShort();
-    private static final BookingDtoShort bookingDtoShort2 = new BookingDtoShort();
-
-    @BeforeAll
-    public static void createShortDto() {
-        bookingDtoShort1.setBookerId(1L);
-        bookingDtoShort1.setId(2L);
-    }
+    @Autowired
+    private JacksonTester<BookingDtoShort> json;
 
     @Test
-    void getId() {
-        assertEquals(2L, bookingDtoShort1.getId());
-    }
+    void testSerialize() throws Exception {
+        var dto = new BookingDtoShort();
+        dto.setBookerId(1L);
+        dto.setId(2L);
 
-    @Test
-    void getBookerId() {
-        assertEquals(1L, bookingDtoShort1.getBookerId());
-    }
-
-    @Test
-    void setId() {
-        bookingDtoShort2.setId(10L);
-        assertEquals(10L, bookingDtoShort2.getId());
-    }
-
-    @Test
-    void setBookerId() {
-        bookingDtoShort2.setBookerId(11L);
-        assertEquals(11L, bookingDtoShort2.getBookerId());
+        var result = json.write(dto);
+        assertThat(result).hasJsonPath("$.bookerId");
+        assertThat(result).hasJsonPath("$.id");
+        assertThat(result).extractingJsonPathNumberValue("$.bookerId")
+                .isEqualTo((dto.getBookerId()).intValue());
+        assertThat(result).extractingJsonPathNumberValue("$.id")
+                .isEqualTo((dto.getId()).intValue());
     }
 }

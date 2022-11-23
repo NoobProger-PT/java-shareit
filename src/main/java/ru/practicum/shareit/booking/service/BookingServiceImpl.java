@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,38 +52,39 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerId(userId,
-                        Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages1 = bookingRepository.findAllByBookerId(userId,
+                        PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages1.stream().collect(Collectors.toList());
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBookerIdAndStartDateBeforeAndEndDateAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages2 = bookingRepository.findAllByBookerIdAndStartDateBeforeAndEndDateAfter(userId,
+                        LocalDateTime.now(), LocalDateTime.now(),
+                                PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages2.stream().collect(Collectors.toList());
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerIdAndEndDateBefore(userId,
-                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages3 = bookingRepository.findAllByBookerIdAndEndDateBefore(userId,
+                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages3.stream().collect(Collectors.toList());
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBookerIdAndStartDateAfter(userId,
-                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages4 = bookingRepository.findAllByBookerIdAndStartDateAfter(userId,
+                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages4.stream().collect(Collectors.toList());
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndStatus(userId,
-                        BookingStatus.WAITING, Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages5 = bookingRepository.findAllByBookerIdAndStatus(userId,
+                        BookingStatus.WAITING, PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages5.stream().collect(Collectors.toList());
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndStatus(userId,
-                        BookingStatus.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages6 = bookingRepository.findAllByBookerIdAndStatus(userId,
+                        BookingStatus.REJECTED,
+                        PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages6.stream().collect(Collectors.toList());
                 break;
         }
-        List<BookingDto> toPrint = new ArrayList<>();
-        for (int i = from; i <= size; i++) {
-            if (i >= bookings.size()) {
-                break;
-            }
-            toPrint.add(BookingMapper.mapToDto(bookings.get(i)));
-        }
-        return toPrint;
+        return bookings.stream().map(BookingMapper::mapToDto).collect(Collectors.toList());
     }
 
     public List<BookingDto> getAllByOwner(long userId, BookingState state, int from, int size) {
@@ -96,38 +99,39 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByItemIdIn(userItems,
-                        Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages1 = bookingRepository.findAllByItemIdIn(userItems,
+                                PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages1.stream().collect(Collectors.toList());
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByItemIdInAndStartDateBeforeAndEndDateAfter(userItems,
-                        LocalDateTime.now(), LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages2 = bookingRepository.findAllByItemIdInAndStartDateBeforeAndEndDateAfter(userItems,
+                        LocalDateTime.now(), LocalDateTime.now(),
+                        PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages2.stream().collect(Collectors.toList());
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByItemIdInAndEndDateBefore(userItems,
-                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages3 = bookingRepository.findAllByItemIdInAndEndDateBefore(userItems,
+                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages3.stream().collect(Collectors.toList());
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByItemIdInAndStartDateAfter(userItems,
-                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages4 = bookingRepository.findAllByItemIdInAndStartDateAfter(userItems,
+                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages4.stream().collect(Collectors.toList());
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByItemIdInAndStatus(userItems,
-                        BookingStatus.WAITING, Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages5 = bookingRepository.findAllByItemIdInAndStatus(userItems,
+                        BookingStatus.WAITING, PageRequest.of(from, size, Sort.by("startDate").descending()));
+                bookings = pages5.stream().collect(Collectors.toList());
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByItemIdInAndStatus(userItems,
-                        BookingStatus.REJECTED, Sort.by(Sort.Direction.DESC, "startDate"));
+                Page<Booking> pages6 = bookingRepository.findAllByItemIdInAndStatus(userItems,
+                        BookingStatus.REJECTED, PageRequest.of(from, size,
+                                Sort.by("startDate").descending()));
+                bookings = pages6.stream().collect(Collectors.toList());
                 break;
         }
-        List<BookingDto> toPrint = new ArrayList<>();
-        for (int i = from; i <= size; i++) {
-            if (i >= bookings.size()) {
-                break;
-            }
-            toPrint.add(BookingMapper.mapToDto(bookings.get(i)));
-        }
-        return toPrint;
+        return bookings.stream().map(BookingMapper::mapToDto).collect(Collectors.toList());
     }
 
     @Transactional

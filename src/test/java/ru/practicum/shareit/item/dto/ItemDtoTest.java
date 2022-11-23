@@ -1,90 +1,44 @@
 package ru.practicum.shareit.item.dto;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@JsonTest
 class ItemDtoTest {
 
-    private static final ItemDto itemDto = new ItemDto();
-    private static final ItemDto itemDto1 = new ItemDto();
-
-    @BeforeAll
-    public static void createShortDto() {
-        itemDto.setId(1L);
-        itemDto.setOwner(new UserDto());
-        itemDto.setName("name");
-        itemDto.setDescription("desc");
-        itemDto.setAvailable(true);
-        itemDto.setRequestId(5L);
-    }
+    @Autowired
+    private JacksonTester<ItemDto> json;
 
     @Test
-    void getId() {
-        assertEquals(1L, itemDto.getId());
-    }
+    void testSerialize() throws Exception {
+        var dto = new ItemDto();
+        dto.setId(1L);
+        dto.setOwner(new UserDto());
+        dto.setName("name");
+        dto.setDescription("desc");
+        dto.setAvailable(true);
+        dto.setRequestId(5L);
 
-    @Test
-    void getOwner() {
-        assertNotNull(itemDto.getOwner());
-    }
-
-    @Test
-    void getName() {
-        assertEquals("name", itemDto.getName());
-    }
-
-    @Test
-    void getDescription() {
-        assertEquals("desc", itemDto.getDescription());
-    }
-
-    @Test
-    void getAvailable() {
-        assertTrue(itemDto.getAvailable());
-    }
-
-    @Test
-    void getRequestId() {
-        assertEquals(5L, itemDto.getRequestId());
-    }
-
-    @Test
-    void setId() {
-        itemDto1.setId(11L);
-        assertEquals(11L, itemDto1.getId());
-    }
-
-    @Test
-    void setOwner() {
-        itemDto1.setOwner(new UserDto());
-        assertNotNull(itemDto1.getOwner());
-    }
-
-    @Test
-    void setName() {
-        itemDto1.setName("name");
-        assertEquals("name", itemDto1.getName());
-    }
-
-    @Test
-    void setDescription() {
-        itemDto1.setDescription("desc");
-        assertEquals("desc", itemDto1.getDescription());
-    }
-
-    @Test
-    void setAvailable() {
-        itemDto1.setAvailable(true);
-        assertTrue(itemDto1.getAvailable());
-    }
-
-    @Test
-    void setRequestId() {
-        itemDto1.setRequestId(5L);
-        assertEquals(5L, itemDto1.getRequestId());
+        var result = json.write(dto);
+        assertThat(result).hasJsonPath("$.id");
+        assertThat(result).hasJsonPath("$.owner");
+        assertThat(result).hasJsonPath("$.name");
+        assertThat(result).hasJsonPath("$.description");
+        assertThat(result).hasJsonPath("$.available");
+        assertThat(result).hasJsonPath("$.requestId");
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo((dto.getId()).intValue());
+        assertThat(result).hasJsonPathValue("$.owner");
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo(dto.getName());
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(dto.getDescription());
+        assertThat(result).extractingJsonPathBooleanValue("$.available");
+        assertThat(result).extractingJsonPathNumberValue("$.requestId")
+                .isEqualTo((dto.getRequestId()).intValue());
     }
 
     @Test

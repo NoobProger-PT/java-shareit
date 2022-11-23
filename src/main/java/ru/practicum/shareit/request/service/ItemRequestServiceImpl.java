@@ -1,6 +1,8 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,8 +82,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getByFromAndSize(int from, int size, long userId) {
-        Map<Long, List<ItemRequestDto>> itemRequestsMap = itemRequestRepository
-                .findAll(Sort.by(Sort.Direction.DESC, "created")).stream()
+        Page<ItemRequest> pages = itemRequestRepository.findAll(PageRequest.of(from, size,
+                Sort.by("created").descending()));
+        Map<Long, List<ItemRequestDto>> itemRequestsMap = pages.stream()
                 .filter(i -> i.getRequestor().getId() != userId)
                 .map(ItemRequestMapper::mapToDto)
                 .collect(groupingBy(ItemRequestDto::getId));
@@ -97,14 +100,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             }
             itemRequestlist.add(itemRequestsMap.get(id).get(0));
         }
-        List<ItemRequestDto> result = new ArrayList<>();
-        for (int i = from; i <= size; i++) {
-            if (i >= itemRequestlist.size()) {
-                break;
-            }
-            result.add(itemRequestlist.get(i));
-        }
-        return result;
+        return itemRequestlist;
     }
 
     private void checkUser(long id) {

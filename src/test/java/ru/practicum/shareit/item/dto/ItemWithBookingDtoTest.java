@@ -1,89 +1,40 @@
 package ru.practicum.shareit.item.dto;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@JsonTest
 class ItemWithBookingDtoTest {
+    @Autowired
+    private JacksonTester<ItemWithBookingDto> json;
 
-    private static final ItemWithBookingDto dto = new ItemWithBookingDto();
-    private static final ItemWithBookingDto dto1 = new ItemWithBookingDto();
-
-    @BeforeAll
-    public static void createShortDto() {
+    @Test
+    void testSerialize() throws Exception {
+        var dto = new ItemWithBookingDto();
         dto.setId(1L);
         dto.setName("name");
         dto.setDescription("desc");
         dto.setAvailable(true);
         dto.setNextBooking(new BookingDtoShort());
         dto.setLastBooking(new BookingDtoShort());
-    }
 
-    @Test
-    void getId() {
-        assertEquals(1L, dto.getId());
-    }
-
-    @Test
-    void getName() {
-        assertEquals("name", dto.getName());
-    }
-
-    @Test
-    void getDescription() {
-        assertEquals("desc", dto.getDescription());
-    }
-
-    @Test
-    void getAvailable() {
-        assertTrue(dto.getAvailable());
-    }
-
-    @Test
-    void getLastBooking() {
-        assertNotNull(dto.getLastBooking());
-    }
-
-    @Test
-    void getNextBooking() {
-        assertNotNull(dto.getLastBooking());
-    }
-
-    @Test
-    void setId() {
-        dto1.setId(11L);
-        assertEquals(11L, dto1.getId());
-    }
-
-    @Test
-    void setName() {
-        dto1.setName("name");
-        assertEquals("name", dto1.getName());
-    }
-
-    @Test
-    void setDescription() {
-        dto1.setDescription("desc");
-        assertEquals("desc", dto1.getDescription());
-    }
-
-    @Test
-    void setAvailable() {
-        dto1.setAvailable(true);
-        assertTrue(dto1.getAvailable());
-    }
-
-    @Test
-    void setLastBooking() {
-        dto1.setLastBooking(new BookingDtoShort());
-        assertNotNull(dto1.getLastBooking());
-    }
-
-    @Test
-    void setNextBooking() {
-        dto1.setNextBooking(new BookingDtoShort());
-        assertNotNull(dto1.getNextBooking());
+        var result = json.write(dto);
+        assertThat(result).hasJsonPath("$.id");
+        assertThat(result).hasJsonPath("$.name");
+        assertThat(result).hasJsonPath("$.description");
+        assertThat(result).hasJsonPath("$.available");
+        assertThat(result).hasJsonPath("$.nextBooking");
+        assertThat(result).hasJsonPath("$.lastBooking");
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo((dto.getId()).intValue());
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo(dto.getName());
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(dto.getDescription());
+        assertThat(result).extractingJsonPathBooleanValue("$.available");
+        assertThat(result).hasJsonPathValue("$.nextBooking");
+        assertThat(result).hasJsonPathValue("$.lastBooking");
     }
 }

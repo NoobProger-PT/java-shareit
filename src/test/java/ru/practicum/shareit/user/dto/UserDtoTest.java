@@ -1,53 +1,33 @@
 package ru.practicum.shareit.user.dto;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@JsonTest
 class UserDtoTest {
 
-    private static final UserDto dto = new UserDto();
-    private static final UserDto dto1 = new UserDto();
+    @Autowired
+    private JacksonTester<UserDto> json;
 
-    @BeforeAll
-    public static void createShortDto() {
+    @Test
+    void testSerialize() throws Exception {
+        var dto = new UserDto();
         dto.setId(1L);
         dto.setName("name");
         dto.setEmail("m@m.m");
-    }
 
-    @Test
-    void getId() {
-        assertEquals(1L, dto.getId());
-    }
-
-    @Test
-    void getName() {
-        assertEquals("name", dto.getName());
-    }
-
-    @Test
-    void getEmail() {
-        assertEquals("m@m.m", dto.getEmail());
-    }
-
-    @Test
-    void setId() {
-        dto1.setId(10L);
-        assertEquals(10L, dto1.getId());
-    }
-
-    @Test
-    void setName() {
-        dto1.setName("name");
-        assertEquals("name", dto1.getName());
-    }
-
-    @Test
-    void setEmail() {
-        dto1.setEmail("m@m.m");
-        assertEquals("m@m.m", dto1.getEmail());
+        var result = json.write(dto);
+        assertThat(result).hasJsonPath("$.id");
+        assertThat(result).hasJsonPath("$.name");
+        assertThat(result).hasJsonPath("$.email");
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo((dto.getId()).intValue());
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo(dto.getName());
+        assertThat(result).extractingJsonPathStringValue("$.email").isEqualTo(dto.getEmail());
     }
 
     @Test

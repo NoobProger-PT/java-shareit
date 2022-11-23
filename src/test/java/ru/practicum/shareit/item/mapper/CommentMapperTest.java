@@ -56,11 +56,13 @@ class CommentMapperTest {
     void mapToComment() {
         Comment comment1 = CommentMapper.mapToComment(dto, 20L, 1L);
         assertEquals(dto.getId(), comment1.getId());
+        assertEquals(dto.getText(), comment1.getText());
     }
 
     @Test
     void mapToDto() {
         CommentDto dto1 = CommentMapper.mapToDto(comment);
         assertEquals(comment.getId(), dto1.getId());
+        assertEquals(comment.getText(), dto1.getText());
     }
 }

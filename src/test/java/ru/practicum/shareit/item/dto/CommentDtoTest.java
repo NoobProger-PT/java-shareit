@@ -1,66 +1,36 @@
 package ru.practicum.shareit.item.dto;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@JsonTest
 class CommentDtoTest {
 
-    private static final CommentDto commentDto = new CommentDto();
-    private static final CommentDto commentDto1 = new CommentDto();
-
-    @BeforeAll
-    public static void createShortDto() {
-        commentDto.setId(1L);
-        commentDto.setCreated(LocalDateTime.MAX);
-        commentDto.setAuthorName("name");
-        commentDto.setText("text");
-    }
+    @Autowired
+    private JacksonTester<CommentDto> json;
 
     @Test
-    void getId() {
-        assertEquals(1, commentDto.getId());
-    }
+    void testSerialize() throws Exception {
+        var dto = new CommentDto();
+        dto.setCreated(LocalDateTime.now());
+        dto.setId(1L);
+        dto.setAuthorName("dino");
+        dto.setText("pizza");
 
-    @Test
-    void getText() {
-        assertEquals("text", commentDto.getText());
-    }
-
-    @Test
-    void getAuthorName() {
-        assertEquals("name", commentDto.getAuthorName());
-    }
-
-    @Test
-    void getCreated() {
-        assertEquals(LocalDateTime.MAX, commentDto.getCreated());
-    }
-
-    @Test
-    void setId() {
-        commentDto1.setId(1L);
-        assertEquals(1, commentDto1.getId());
-    }
-
-    @Test
-    void setText() {
-        commentDto1.setText("text");
-        assertEquals("text", commentDto1.getText());
-    }
-
-    @Test
-    void setAuthorName() {
-        commentDto1.setAuthorName("name");
-        assertEquals("name", commentDto1.getAuthorName());
-    }
-
-    @Test
-    void setCreated() {
-        commentDto1.setCreated(LocalDateTime.MAX);
-        assertEquals(LocalDateTime.MAX, commentDto1.getCreated());
+        var result = json.write(dto);
+        assertThat(result).hasJsonPath("$.created");
+        assertThat(result).hasJsonPath("$.id");
+        assertThat(result).hasJsonPath("$.authorName");
+        assertThat(result).hasJsonPath("$.text");
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo((dto.getId()).intValue());
+        assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo(dto.getAuthorName());
+        assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo(dto.getText());
+        assertThat(result).hasJsonPathValue("$.created");
     }
 }

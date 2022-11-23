@@ -4,16 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Marker;
-import ru.practicum.shareit.exception.RequestException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingAndCommentDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
+@Validated
 @RequestMapping(path = "/items")
 @RequiredArgsConstructor
 public class ItemController {
@@ -21,9 +23,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemWithBookingDto> get(@RequestHeader("X-Sharer-User-Id") long userId,
-                                        @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size) {
-        checkInputParam(from, size);
+                                        @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                        @RequestParam(defaultValue = "10") @Positive int size) {
         return itemService.getAll(userId, from, size);
     }
 
@@ -36,12 +37,11 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> getByText(@RequestHeader("X-Sharer-User-Id") long userId,
                                   @RequestParam String text,
-                                   @RequestParam(defaultValue = "0") int from,
-                                   @RequestParam(defaultValue = "10") int size) {
+                                   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                   @RequestParam(defaultValue = "10") @Positive int size) {
         if (text.isBlank()) {
             return List.of();
         }
-        checkInputParam(from, size);
         return itemService.findByText(text, from, size);
     }
 
@@ -69,11 +69,5 @@ public class ItemController {
     public void delete(@RequestHeader("X-Sharer-User-Id") long userId,
                            @PathVariable long itemId) {
         itemService.delete(userId, itemId);
-    }
-
-    private void checkInputParam(int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new RequestException("Неверно заполнены данные параметра страницы.");
-        }
     }
 }

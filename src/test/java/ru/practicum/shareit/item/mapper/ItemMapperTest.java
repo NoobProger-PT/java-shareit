@@ -73,20 +73,28 @@ class ItemMapperTest {
         bookingDtoShort.setId(1L);
         bookingDtoShort.setBookerId(1L);
 
-        bookingDtoShort.setId(2L);
-        bookingDtoShort.setBookerId(2L);
+        bookingDtoShort1.setId(2L);
+        bookingDtoShort1.setBookerId(2L);
     }
 
     @Test
     void mapToItem() {
         Item item1 = ItemMapper.mapToItem(itemDto, 1L);
         assertEquals(itemDto.getName(), item1.getName());
+        assertEquals(itemDto.getId(), item1.getId());
+        assertEquals(itemDto.getRequestId(), item1.getRequest().getId());
+        assertEquals(itemDto.getDescription(), item1.getDescription());
+        assertEquals(itemDto.getOwner().getId(), item1.getOwner().getId());
     }
 
     @Test
     void mapToItemDto() {
         ItemDto itemDto1 = ItemMapper.mapToItemDto(item);
         assertEquals(item.getName(), itemDto1.getName());
+        assertEquals(item.getId(), itemDto1.getId());
+        assertEquals(item.getDescription(), itemDto1.getDescription());
+        assertEquals(item.getOwner().getId(), itemDto1.getOwner().getId());
+        assertEquals(item.getRequest().getId(), itemDto1.getRequestId());
     }
 
     @Test
@@ -95,12 +103,19 @@ class ItemMapperTest {
                 bookingDtoShort1, bookingDtoShort);
         assertEquals(itemDto.getName(), itemWithBookingDto.getName());
         assertEquals(bookingDtoShort.getBookerId(), itemWithBookingDto.getNextBooking().getBookerId());
+        assertEquals(itemDto.getDescription(), itemWithBookingDto.getDescription());
+        assertEquals(itemDto.getAvailable(), itemWithBookingDto.getAvailable());
+        assertEquals(1, itemWithBookingDto.getNextBooking().getBookerId());
+        assertEquals(2, itemWithBookingDto.getLastBooking().getBookerId());
     }
 
     @Test
     void testMapToItemWithBookingDto() {
         ItemWithBookingDto itemWithBookingDto = ItemMapper.mapToItemWithBookingDto(itemDto);
         assertEquals(itemDto.getName(), itemWithBookingDto.getName());
+        assertEquals(itemDto.getDescription(), itemWithBookingDto.getDescription());
+        assertEquals(itemDto.getId(), itemWithBookingDto.getId());
+        assertEquals(itemDto.getAvailable(), itemWithBookingDto.getAvailable());
     }
 
     @Test
