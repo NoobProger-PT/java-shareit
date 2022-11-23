@@ -17,6 +17,7 @@ class ItemRequestDtoTest {
 
     @Autowired
     private JacksonTester<ItemRequestDto> json;
+
     @Test
     void testSerialize() throws Exception {
         var dto = new ItemRequestDto();
