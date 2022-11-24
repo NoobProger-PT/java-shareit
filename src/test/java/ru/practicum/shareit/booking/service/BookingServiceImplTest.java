@@ -120,8 +120,8 @@ class BookingServiceImplTest {
         var result = bookingService.getAllByUser(1L, BookingState.CURRENT, 0, 10);
         Assertions.assertNotNull(result);
         Assertions.assertTrue(result.isEmpty());
-        verify(bookingRepository, times(1)).
-                findAllByBookerIdAndStartDateBeforeAndEndDateAfter(anyLong(), any(), any(), (Pageable) any());
+        verify(bookingRepository, times(1))
+                .findAllByBookerIdAndStartDateBeforeAndEndDateAfter(anyLong(), any(), any(), (Pageable) any());
     }
 
     @Test

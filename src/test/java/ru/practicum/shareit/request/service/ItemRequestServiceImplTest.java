@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.exception.ItemDontExistsException;
 import ru.practicum.shareit.exception.UserDontExistsException;
 import ru.practicum.shareit.item.model.Item;
