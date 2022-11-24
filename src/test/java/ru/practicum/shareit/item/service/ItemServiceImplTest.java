@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.booking.model.Booking;
@@ -91,25 +92,29 @@ class ItemServiceImplTest {
         comment.setId(20L);
     }
 
-//    @Test
-//    void getAll() {
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        var result = itemService.getAll(1L, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(item.getId(), result.get(0).getId());
-//    }
+    @Test
+    void getAll() {
+        when(itemRepository.findAllByOwnerId(anyLong(), any())).thenReturn(Page.empty());
+        var result = itemService.getAll(1L, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(itemRepository, times(1))
+                .findAllByOwnerId(anyLong(), any());
+    }
 
-//    @Test
-//    void getAllWithBooking() {
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdInAndEndDateBeforeAndStatus(any(), any(), any(), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        when(bookingRepository.findAllByItemIdInAndStartDateAfterAndStatus(any(), any(), any(), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = itemService.getAll(1L, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(item.getId(), result.get(0).getId());
-//    }
+    @Test
+    void getAllWithBooking() {
+        when(itemRepository.findAllByOwnerId(anyLong(), any())).thenReturn(Page.empty());
+        when(bookingRepository.findAllByItemIdInAndEndDateBeforeAndStatus(any(), any(), any(), any()))
+                .thenReturn(Collections.singletonList(booking));
+        when(bookingRepository.findAllByItemIdInAndStartDateAfterAndStatus(any(), any(), any(), any()))
+                .thenReturn(Collections.singletonList(booking));
+        var result = itemService.getAll(1L, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(itemRepository, times(1))
+                .findAllByOwnerId(anyLong(), any());
+    }
 
     @Test
     void addNew() {
@@ -138,14 +143,17 @@ class ItemServiceImplTest {
         Assertions.assertEquals(item.getId(), result.getId());
     }
 
-//    @Test
-//    void findByText() {
-//        when(itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(
-//                anyString(), anyString(), anyBoolean())).thenReturn(Collections.singletonList(item));
-//        var result = itemService.findByText("1L", 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(item.getId(), result.get(0).getId());
-//    }
+    @Test
+    void findByText() {
+        when(itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(
+                anyString(), anyString(), anyBoolean(), any())).thenReturn(Page.empty());
+        var result = itemService.findByText("1L", 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(itemRepository, times(1))
+                .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(
+                        anyString(), anyString(), anyBoolean(), any());
+    }
 
     @Test
     void update() {

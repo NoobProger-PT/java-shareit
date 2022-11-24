@@ -3,6 +3,9 @@ package ru.practicum.shareit.request.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.exception.ItemDontExistsException;
 import ru.practicum.shareit.exception.UserDontExistsException;
 import ru.practicum.shareit.item.model.Item;
@@ -19,8 +22,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class ItemRequestServiceImplTest {
 
@@ -119,6 +122,13 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getByFromAndSize() {
-
+        when(itemRequestRepository.findAll((Pageable) any())).thenReturn(Page.empty());
+        when(itemRepository.findAllByRequestIdIn(Collections.singletonList(anyLong())))
+                .thenReturn(Collections.singletonList(item));
+        var result = itemRequestService.getByFromAndSize(0, 10, 1L);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(itemRequestRepository, times(1))
+                .findAll((Pageable) any());
     }
 }

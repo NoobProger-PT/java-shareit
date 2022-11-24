@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
@@ -19,18 +21,17 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class BookingServiceImplTest {
 
     private BookingServiceImpl bookingService;
     private BookingRepository bookingRepository;
+    private BookingRepository bookingRepository1;
     private ItemRepository itemRepository;
     private UserRepository userRepository;
 
@@ -101,59 +102,75 @@ class BookingServiceImplTest {
         });
     }
 
-//    @Test
-//    void getAllByUserCurrentState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(bookingRepository.findAllByBookerId(anyLong(), (Pageable) any())).thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByUser(1L, BookingState.CURRENT, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByUserAllState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerId(anyLong(), (Pageable) any())).thenReturn(Page.empty());
+        var result = bookingService.getAllByUser(1L, BookingState.ALL, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1)).findAllByBookerId(anyLong(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByUserPastState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(bookingRepository.findAllByBookerId(anyLong(), any())).thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByUser(1L, BookingState.PAST, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByUserCurrentState() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerIdAndStartDateBeforeAndEndDateAfter(anyLong(),
+                any(), any(), (Pageable) any())).thenReturn(Page.empty());
+        var result = bookingService.getAllByUser(1L, BookingState.CURRENT, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1)).
+                findAllByBookerIdAndStartDateBeforeAndEndDateAfter(anyLong(), any(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByUserFutureState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(bookingRepository.findAllByBookerId(anyLong(), any())).thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByUser(1L, BookingState.FUTURE, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByUserPastState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerIdAndEndDateBefore(anyLong(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByUser(1L, BookingState.PAST, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByBookerIdAndEndDateBefore(anyLong(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByUserWaitingState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(bookingRepository.findAllByBookerId(anyLong(), any())).thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByUser(1L, BookingState.WAITING, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByUserFutureState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerIdAndStartDateAfter(anyLong(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByUser(1L, BookingState.FUTURE, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByBookerIdAndStartDateAfter(anyLong(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByUserRejectedState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(bookingRepository.findAllByBookerId(anyLong(), any())).thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByUser(1L, BookingState.REJECTED, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByUserWaitingState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerIdAndStatus(anyLong(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByUser(1L, BookingState.WAITING, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByBookerIdAndStatus(anyLong(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByUserAllState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(bookingRepository.findAllByBookerId(anyLong(), any())).thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByUser(1L, BookingState.ALL, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(booking.getId(), result.get(0).getId());
-//    }
+    @Test
+    void getAllByUserRejectedState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerIdAndStatus(anyLong(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByUser(1L, BookingState.REJECTED, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByBookerIdAndStatus(anyLong(), any(), (Pageable) any());
+    }
 
     @Test
     void getAllByUserWithWrongUser() {
@@ -169,71 +186,83 @@ class BookingServiceImplTest {
         });
     }
 
-//    @Test
-//    void getAllByOwnerAllState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdIn(Collections.singletonList(anyLong()), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByOwner(1L, BookingState.ALL, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByOwnerAllState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
+        when(bookingRepository.findAllByItemIdIn(any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByOwner(1L, BookingState.ALL, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByItemIdIn(any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByOwnerCurrentState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdIn(Collections.singletonList(anyLong()), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByOwner(1L, BookingState.CURRENT, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByOwnerCurrentState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
+        when(bookingRepository.findAllByItemIdInAndStartDateBeforeAndEndDateAfter(any(), any(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByOwner(1L, BookingState.CURRENT, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByItemIdInAndStartDateBeforeAndEndDateAfter(any(), any(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByOwnerPastState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdIn(Collections.singletonList(anyLong()), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByOwner(1L, BookingState.PAST, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByOwnerPastState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
+        when(bookingRepository.findAllByItemIdInAndEndDateBefore(any(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByOwner(1L, BookingState.PAST, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByItemIdInAndEndDateBefore(any(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByOwnerFutureState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdIn(Collections.singletonList(anyLong()), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByOwner(1L, BookingState.FUTURE, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByOwnerFutureState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
+        when(bookingRepository.findAllByItemIdInAndStartDateAfter(any(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByOwner(1L, BookingState.FUTURE, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByItemIdInAndStartDateAfter(any(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByOwnerWaitingState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdIn(Collections.singletonList(anyLong()), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByOwner(1L, BookingState.WAITING, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByOwnerWaitingState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
+        when(bookingRepository.findAllByItemIdInAndStatus(any(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByOwner(1L, BookingState.WAITING, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByItemIdInAndStatus(any(), any(), (Pageable) any());
+    }
 
-//    @Test
-//    void getAllByOwnerRejectedState() {
-//        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-//        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
-//        when(bookingRepository.findAllByItemIdIn(Collections.singletonList(anyLong()), any()))
-//                .thenReturn(Collections.singletonList(booking));
-//        var result = bookingService.getAllByOwner(1L, BookingState.REJECTED, 0, 10);
-//        Assertions.assertNotNull(result);
-//        Assertions.assertEquals(0, result.size());
-//    }
+    @Test
+    void getAllByOwnerRejectedState() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(Collections.singletonList(item));
+        when(bookingRepository.findAllByItemIdInAndStatus(any(), any(), (Pageable) any()))
+                .thenReturn(Page.empty());
+        var result = bookingService.getAllByOwner(1L, BookingState.REJECTED, 0, 10);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+        verify(bookingRepository, times(1))
+                .findAllByItemIdInAndStatus(any(), any(), (Pageable) any());
+    }
 
     @Test
     void create() {

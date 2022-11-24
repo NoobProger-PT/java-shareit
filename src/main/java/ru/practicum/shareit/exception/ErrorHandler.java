@@ -36,49 +36,49 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidUser(final UserDontExistsException e) {
+    public ResponseEntity<String> invalidUser(final UserDontExistsException e) {
         log.info("Пользователь не найден. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidItem(final ItemDontExistsException e) {
+    public ResponseEntity<String> invalidItem(final ItemDontExistsException e) {
         log.info("Предмет не найден. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidItem(final InvalidItem e) {
+    public ResponseEntity<String> invalidItem(final InvalidItem e) {
         log.info("Неверно заполнены данные вещи. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidUser(final InvalidUser e) {
+    public ResponseEntity<String> invalidUser(final InvalidUser e) {
         log.info("Неверно заполнены данные пользователя. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    public ResponseEntity badRequest(final RequestException e) {
+    public ResponseEntity<String> badRequest(final RequestException e) {
         log.info("Неверно заполнены данные. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity linkError(final ConstraintViolationException e) {
+    public ResponseEntity<String> linkError(final ConstraintViolationException e) {
         log.info("Ошибка в ссылочной связи. {}", e.getMessage());
         return new ResponseEntity<>("Не найдена связь между сущностями.", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity noElementException(final NoSuchElementException e) {
+    public ResponseEntity<String> noElementException(final NoSuchElementException e) {
         log.info("Нет совпадений. {}", e.getMessage());
         return new ResponseEntity<>("Поиск не дал результатов", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity illegalException(final MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<ErrorResponse> illegalException(final MethodArgumentTypeMismatchException e) {
         String exceptionName = "Unknown state: UNSUPPORTED_STATUS";
         log.info("Переданы неверные данные. {}", e.getMessage());
         return new ResponseEntity<>(
