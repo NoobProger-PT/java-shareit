@@ -62,19 +62,6 @@ class UserControllerTest {
     }
 
     @Test
-    public void shouldGetWithWrongHttp() throws Exception {
-        when(userService.getAll())
-                .thenReturn(List.of(userDto));
-
-        mvc.perform(get("/userl")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1l)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     public void shouldGetById() throws Exception {
         when(userService.getById(anyLong()))
                 .thenReturn(userDto);
