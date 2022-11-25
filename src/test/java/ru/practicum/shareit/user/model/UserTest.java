@@ -1,4 +1,4 @@
-/*package ru.practicum.shareit.user.model;
+package ru.practicum.shareit.user.model;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -79,4 +79,4 @@ class UserTest {
         User user2 = new User(11L);
         assertEquals(11L, user2.getId());
     }
-}*/
+}

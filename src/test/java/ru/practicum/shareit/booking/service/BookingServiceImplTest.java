@@ -29,9 +29,8 @@ import static org.mockito.Mockito.*;
 
 class BookingServiceImplTest {
 
-    private BookingServiceImpl bookingService;
+    private BookingService bookingService;
     private BookingRepository bookingRepository;
-    private BookingRepository bookingRepository1;
     private ItemRepository itemRepository;
     private UserRepository userRepository;
 
