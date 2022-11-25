@@ -52,34 +52,34 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case ALL:
                 bookings = bookingRepository.findAllByBookerId(userId,
-                        PageRequest.of(from, size, Sort.by("startDate").descending())).stream()
+                        PageRequest.of(from/size, size, Sort.by("startDate").descending())).stream()
                         .collect(Collectors.toList());
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllByBookerIdAndStartDateBeforeAndEndDateAfter(userId,
                         LocalDateTime.now(), LocalDateTime.now(),
-                                PageRequest.of(from, size, Sort.by("startDate").descending())).stream()
+                                PageRequest.of(from/size, size, Sort.by("startDate").descending())).stream()
                         .collect(Collectors.toList());
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByBookerIdAndEndDateBefore(userId,
-                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()))
+                        LocalDateTime.now(), PageRequest.of(from/size, size, Sort.by("startDate").descending()))
                         .stream().collect(Collectors.toList());
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBookerIdAndStartDateAfter(userId,
-                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()))
+                        LocalDateTime.now(), PageRequest.of(from/size, size, Sort.by("startDate").descending()))
                         .stream().collect(Collectors.toList());
                 break;
             case WAITING:
                 bookings = bookingRepository.findAllByBookerIdAndStatus(userId,
-                        BookingStatus.WAITING, PageRequest.of(from, size, Sort.by("startDate").descending()))
+                        BookingStatus.WAITING, PageRequest.of(from/size, size, Sort.by("startDate").descending()))
                         .stream().collect(Collectors.toList());
                 break;
             case REJECTED:
                 bookings = bookingRepository.findAllByBookerIdAndStatus(userId,
                         BookingStatus.REJECTED,
-                        PageRequest.of(from, size, Sort.by("startDate").descending())).stream()
+                        PageRequest.of(from/size, size, Sort.by("startDate").descending())).stream()
                         .collect(Collectors.toList());
                 break;
         }
@@ -99,33 +99,33 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case ALL:
                 bookings = bookingRepository.findAllByItemIdIn(userItems,
-                                PageRequest.of(from, size, Sort.by("startDate").descending())).stream()
+                                PageRequest.of(from/size, size, Sort.by("startDate").descending())).stream()
                         .collect(Collectors.toList());
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllByItemIdInAndStartDateBeforeAndEndDateAfter(userItems,
                         LocalDateTime.now(), LocalDateTime.now(),
-                        PageRequest.of(from, size, Sort.by("startDate").descending())).stream()
+                        PageRequest.of(from/size, size, Sort.by("startDate").descending())).stream()
                         .collect(Collectors.toList());
                 break;
             case PAST:
                 bookings = bookingRepository.findAllByItemIdInAndEndDateBefore(userItems,
-                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()))
+                        LocalDateTime.now(), PageRequest.of(from/size, size, Sort.by("startDate").descending()))
                         .stream().collect(Collectors.toList());
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByItemIdInAndStartDateAfter(userItems,
-                        LocalDateTime.now(), PageRequest.of(from, size, Sort.by("startDate").descending()))
+                        LocalDateTime.now(), PageRequest.of(from/size, size, Sort.by("startDate").descending()))
                         .stream().collect(Collectors.toList());
                 break;
             case WAITING:
                 bookings = bookingRepository.findAllByItemIdInAndStatus(userItems,
-                        BookingStatus.WAITING, PageRequest.of(from, size, Sort.by("startDate").descending()))
+                        BookingStatus.WAITING, PageRequest.of(from/size, size, Sort.by("startDate").descending()))
                         .stream().collect(Collectors.toList());
                 break;
             case REJECTED:
                 bookings = bookingRepository.findAllByItemIdInAndStatus(userItems,
-                        BookingStatus.REJECTED, PageRequest.of(from, size,
+                        BookingStatus.REJECTED, PageRequest.of(from/size, size,
                                 Sort.by("startDate").descending())).stream().collect(Collectors.toList());
                 break;
         }

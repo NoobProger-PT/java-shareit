@@ -1,8 +1,9 @@
-package ru.practicum.shareit.exception;
+package ru.practicum.shareit.request.mapper.exception;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.practicum.shareit.exception.*;
 
 import java.util.NoSuchElementException;
 
@@ -39,7 +40,7 @@ class ErrorHandlerTest {
         var ex = new InvalidUser("Неверно заполнены данные пользователя");
         var result = errorHandler.invalidUser(ex);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(ex.getMessage(), result.getBody().getError());
+        Assertions.assertEquals(409, result.getStatusCodeValue());
     }
 
     @Test

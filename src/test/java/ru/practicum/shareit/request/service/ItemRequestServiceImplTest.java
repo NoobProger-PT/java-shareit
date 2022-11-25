@@ -177,8 +177,6 @@ class ItemRequestServiceImplTest {
     void getByFrom1AndSize10() {
         List<ItemRequestDto> dtos = itemRequestService.getByFromAndSize(0, 10, 2L);
         assertEquals(2, dtos.size());
-        List<ItemRequestDto> dtos1 = itemRequestService.getByFromAndSize(1, 10, 2L);
-        assertEquals(0, dtos1.size());
     }
     /*
 

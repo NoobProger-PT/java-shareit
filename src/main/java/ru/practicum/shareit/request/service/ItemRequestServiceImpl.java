@@ -82,7 +82,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getByFromAndSize(int from, int size, long userId) {
-        Page<ItemRequest> pages = itemRequestRepository.findAll(PageRequest.of(from, size,
+        Page<ItemRequest> pages = itemRequestRepository.findAll(PageRequest.of(from/size, size,
                 Sort.by("created").descending()));
         Map<Long, List<ItemRequestDto>> itemRequestsMap = pages.stream()
                 .filter(i -> i.getRequestor().getId() != userId)

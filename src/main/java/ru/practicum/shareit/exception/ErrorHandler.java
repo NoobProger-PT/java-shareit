@@ -58,8 +58,7 @@ public class ErrorHandler {
     public ResponseEntity<ErrorResponse> invalidUser(final InvalidUser e) {
         log.info("Неверно заполнены данные пользователя. {}", e.getMessage());
         return new ResponseEntity<>(
-                new ErrorResponse("Неверно заполнены данные пользователя"), HttpStatus.CONFLICT);
-//        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+                new ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
