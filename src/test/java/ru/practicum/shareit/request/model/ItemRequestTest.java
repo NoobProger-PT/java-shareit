@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.model;
+/*package ru.practicum.shareit.request.model;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -70,4 +70,4 @@ class ItemRequestTest {
         ItemRequest itemRequest2 = new ItemRequest(12L);
         assertEquals(12L, itemRequest2.getId());
     }
-}
+}*/
