@@ -29,7 +29,7 @@ class UserRepositoryTest {
     @Test
     public void shouldGetById() {
         createUser();
-        User userById = userRepository.getById(1L);
+        User userById = userRepository.findById(1L).get();
         assertThat(userById.getId(), equalTo(user.getId()));
     }
 
