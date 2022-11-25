@@ -1,23 +1,75 @@
 package ru.practicum.shareit.user.service;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.exception.UserDontExistsException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.Collections;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
-
+@SpringBootTest
+@AllArgsConstructor(onConstructor_ = @Autowired)
+@AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserServiceImplTest {
 
+    private UserService service;
+
+    @Test
+    void addUser() {
+        UserDto user = createUser();
+        service.save(user);
+        assertEquals(user.getName(), service.getById(1L).getName());
+    }
+
+    @Test
+    void updateUser() {
+        UserDto user = createUser();
+        service.save(user);
+        user.setEmail("emailnew@mail.ru");
+        user.setName("new");
+        user.setId(1L);
+        service.update(1L, user);
+        assertEquals("new", service.getById(1L).getName());
+    }
+
+    @Test
+    void updateUserWithWrongId() {
+        UserDto user = createUser();
+        service.save(user);
+        user.setEmail("emailnew@mail.ru");
+        user.setName("new");
+        user.setId(1L);
+        assertThrows(UserDontExistsException.class, () -> service.update(10L, user));
+    }
+
+    @Test
+    void delete() {
+        UserDto user = createUser();
+        service.save(user);
+        assertEquals(user.getName(), service.getById(1L).getName());
+        service.delete(1L);
+        assertThrows(UserDontExistsException.class, () -> service.getById(1L));
+    }
+
+    @Test
+    void getAll() {
+        UserDto user = createUser();
+        service.save(user);
+        assertEquals(user.getName(), service.getAll().get(0).getName());
+    }
+
+    private UserDto createUser() {
+        UserDto userDto = new UserDto();
+        userDto.setName("name");
+        userDto.setEmail("email@mail.ru");
+        return userDto;
+    }
+/*
     private UserServiceImpl userService;
 
     private UserRepository userRepository;
@@ -97,5 +149,5 @@ class UserServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         userService.delete(userId);
         verify(userRepository, times(0)).delete(any());
-    }
+    }*/
 }
