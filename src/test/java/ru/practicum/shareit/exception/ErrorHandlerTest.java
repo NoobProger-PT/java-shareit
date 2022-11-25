@@ -3,6 +3,7 @@ package ru.practicum.shareit.exception;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.NoSuchElementException;
 
@@ -72,10 +73,5 @@ class ErrorHandlerTest {
         var result = errorHandler.serverException(ex);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(ex.getMessage(), result.getBody());
-    }
-
-    @Test
-    void illegalException() {
-
     }
 }
