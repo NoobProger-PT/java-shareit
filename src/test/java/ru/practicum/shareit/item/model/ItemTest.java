@@ -33,6 +33,7 @@ class ItemTest {
         item.setRequest(new ItemRequest());
         item.setName("name");
     }
+
     @Test
     public void shouldReturnCorrectJson() throws Exception {
         ItemDto itemDto = new ItemDto();
