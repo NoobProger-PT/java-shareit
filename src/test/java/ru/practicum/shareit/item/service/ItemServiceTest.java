@@ -92,6 +92,8 @@ class ItemServiceTest {
         assertEquals(1, items.size());
     }
 
+
+
     @Test
     void addNew() {
         ItemDto itemDto2 = createItem();
@@ -127,6 +129,12 @@ class ItemServiceTest {
     }
 
     @Test
+    void findById2() {
+        ItemWithBookingAndCommentDto dto = itemService.findById(1L, 10L);
+        assertEquals(dto.getName(), itemDto.getName());
+    }
+
+    @Test
     void findByText() {
         List<ItemDto> items = itemService.findByText("item", 0, 10);
         assertEquals(items.size(), 1);
@@ -141,6 +149,22 @@ class ItemServiceTest {
         itemDto2.setRequestId(null);
         ItemDto dto = itemService.update(1L, 1L, itemDto2);
         assertEquals(dto.getName(), itemDto2.getName());
+    }
+
+    @Test
+    void update2() {
+        ItemDto itemDto2 = new ItemDto();
+        ItemDto dto = itemService.update(1L, 1L, itemDto2);
+        assertEquals("item", dto.getName());
+    }
+
+    @Test
+    void update3() {
+        ItemDto itemDto2 = new ItemDto();
+        itemDto2.setName("");
+        itemDto2.setDescription("");
+        ItemDto dto = itemService.update(1L, 1L, itemDto2);
+        assertEquals("item", dto.getName());
     }
 
     @Test
