@@ -2,12 +2,24 @@ package ru.practicum.shareit.item.model;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
+import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@JsonTest
 class ItemTest {
+
+    @Autowired
+    JacksonTester<ItemDto> json;
+
 
     private static final Item item = new Item();
     private static final Item item1 = new Item();
@@ -20,6 +32,26 @@ class ItemTest {
         item.setDescription("desc");
         item.setRequest(new ItemRequest());
         item.setName("name");
+    }
+    @Test
+    public void shouldReturnCorrectJson() throws Exception {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(10L);
+        itemDto.setOwner(new UserDto(1L));
+        itemDto.setName("name");
+        itemDto.setDescription("desc");
+        itemDto.setAvailable(true);
+        itemDto.setRequestId(5L);
+
+
+        JsonContent<ItemDto> result = json.write(itemDto);
+
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(10);
+        assertThat(result).extractingJsonPathNumberValue("$.owner.id").isEqualTo(1);
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("name");
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
+        assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
+        assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(5);
     }
 
     @Test
