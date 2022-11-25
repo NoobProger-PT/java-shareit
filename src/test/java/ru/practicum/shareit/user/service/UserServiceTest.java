@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class UserServiceImplTest {
+class UserServiceTest {
 
     private UserService service;
 

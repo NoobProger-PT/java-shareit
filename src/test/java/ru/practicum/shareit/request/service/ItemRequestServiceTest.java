@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ItemRequestServiceImplTest {
+class ItemRequestServiceTest {
 
     @Autowired
     private ItemService itemService;
