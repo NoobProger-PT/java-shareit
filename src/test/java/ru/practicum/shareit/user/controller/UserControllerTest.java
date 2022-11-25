@@ -24,11 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
+
+
     @Autowired
     ObjectMapper mapper;
 
     @MockBean
     UserService userService;
+
 
     @Autowired
     private MockMvc mvc;
@@ -56,6 +59,19 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].id", is(userDto.getId().intValue())))
                 .andExpect(jsonPath("$[0].name", is(userDto.getName())))
                 .andExpect(jsonPath("$[0].email", is(userDto.getEmail())));
+    }
+
+    @Test
+    public void shouldGetWithWrongHttp() throws Exception {
+        when(userService.getAll())
+                .thenReturn(List.of(userDto));
+
+        mvc.perform(get("/userl")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1l)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -117,4 +133,5 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
 }
