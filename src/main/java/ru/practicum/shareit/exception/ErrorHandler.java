@@ -1,5 +1,6 @@
 package ru.practicum.shareit.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -54,9 +55,11 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> invalidUser(final InvalidUser e) {
+    public ResponseEntity<ErrorResponse> invalidUser(final InvalidUser e) {
         log.info("Неверно заполнены данные пользователя. {}", e.getMessage());
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(
+                new ErrorResponse("Неверно заполнены данные пользователя"), HttpStatus.CONFLICT);
+//        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
@@ -92,12 +95,8 @@ public class ErrorHandler {
     }
 
     @Getter
+    @AllArgsConstructor
     static class ErrorResponse {
-
         private final String error;
-
-        public ErrorResponse(String errorName) {
-            this.error = errorName;
-        }
     }
 }

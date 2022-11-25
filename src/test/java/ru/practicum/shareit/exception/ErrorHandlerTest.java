@@ -36,10 +36,10 @@ class ErrorHandlerTest {
 
     @Test
     void testInvalidUser() {
-        var ex = new InvalidUser("Ошибка");
+        var ex = new InvalidUser("Неверно заполнены данные пользователя");
         var result = errorHandler.invalidUser(ex);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(ex.getMessage(), result.getBody());
+        Assertions.assertEquals(ex.getMessage(), result.getBody().getError());
     }
 
     @Test
