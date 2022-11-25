@@ -46,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
 
     public List<ItemWithBookingDto> getAll(long userId, int from, int size) {
         List<ItemWithBookingDto> result;
-        Page<Item> pages = itemRepository.findAllByOwnerId(userId, PageRequest.of(from/size, size));
+        Page<Item> pages = itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size));
         List<ItemDto> items = pages.stream()
                 .map(ItemMapper::mapToItemDto)
                 .sorted(Comparator.comparing(ItemDto::getId))
@@ -109,7 +109,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> findByText(String text, int from, int size) {
         Page<Item> pages = itemRepository
                 .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(text, text, true,
-                        PageRequest.of(from/size, size));
+                        PageRequest.of(from / size, size));
 
         return pages.stream()
                 .map(ItemMapper::mapToItemDto)

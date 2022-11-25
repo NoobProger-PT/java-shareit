@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.mapper.exception;
+package ru.practicum.shareit.exception;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
