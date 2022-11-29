@@ -1,5 +1,6 @@
 package ru.practicum.shareit.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -12,13 +13,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.user.controller.UserController;
 
 import java.util.NoSuchElementException;
 
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class,
+                                        ItemRequestController.class})
 public class ErrorHandler {
 
     @ExceptionHandler
@@ -34,49 +37,50 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidUser(final UserDontExistsException e) {
+    public ResponseEntity<String> invalidUser(final UserDontExistsException e) {
         log.info("Пользователь не найден. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidItem(final ItemDontExistsException e) {
+    public ResponseEntity<String> invalidItem(final ItemDontExistsException e) {
         log.info("Предмет не найден. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidItem(final InvalidItem e) {
+    public ResponseEntity<String> invalidItem(final InvalidItem e) {
         log.info("Неверно заполнены данные вещи. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity invalidUser(final InvalidUser e) {
+    public ResponseEntity<ErrorResponse> invalidUser(final InvalidUser e) {
         log.info("Неверно заполнены данные пользователя. {}", e.getMessage());
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(
+                new ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    public ResponseEntity badRequest(final RequestException e) {
+    public ResponseEntity<String> badRequest(final RequestException e) {
         log.info("Неверно заполнены данные. {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity linkError(final ConstraintViolationException e) {
+    public ResponseEntity<String> linkError(final ConstraintViolationException e) {
         log.info("Ошибка в ссылочной связи. {}", e.getMessage());
         return new ResponseEntity<>("Не найдена связь между сущностями.", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity noElementException(final NoSuchElementException e) {
+    public ResponseEntity<String> noElementException(final NoSuchElementException e) {
         log.info("Нет совпадений. {}", e.getMessage());
         return new ResponseEntity<>("Поиск не дал результатов", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity illegalException(final MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<ErrorResponse> illegalException(final MethodArgumentTypeMismatchException e) {
         String exceptionName = "Unknown state: UNSUPPORTED_STATUS";
         log.info("Переданы неверные данные. {}", e.getMessage());
         return new ResponseEntity<>(
@@ -90,12 +94,8 @@ public class ErrorHandler {
     }
 
     @Getter
+    @AllArgsConstructor
     static class ErrorResponse {
-
         private final String error;
-
-        public ErrorResponse(String errorName) {
-            this.error = errorName;
-        }
     }
 }

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +44,10 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
-    public List<ItemWithBookingDto> getAll(long userId) {
+    public List<ItemWithBookingDto> getAll(long userId, int from, int size) {
         List<ItemWithBookingDto> result;
-        List<ItemDto> items = itemRepository.findAllByOwnerId(userId).stream()
+        Page<Item> pages = itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size));
+        List<ItemDto> items = pages.stream()
                 .map(ItemMapper::mapToItemDto)
                 .sorted(Comparator.comparing(ItemDto::getId))
                 .collect(Collectors.toList());
@@ -79,7 +82,8 @@ public class ItemServiceImpl implements ItemService {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Пользователя с id " + userId + " не существует."));
         Item item = itemRepository.save(ItemMapper.mapToItem(itemDto, userId));
-        return ItemMapper.mapToItemDto(item);
+            return ItemMapper.mapToItemDto(item);
+
     }
 
     public ItemWithBookingAndCommentDto findById(long itemId, long userId) {
@@ -102,8 +106,12 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemBookingCommentDto(itemWithBookingDto, comments);
     }
 
-    public List<ItemDto> findByText(String text) {
-        return itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(text, text, true).stream()
+    public List<ItemDto> findByText(String text, int from, int size) {
+        Page<Item> pages = itemRepository
+                .findAllByNameOrDescriptionContainingIgnoreCaseAndAvailable(text, text, true,
+                        PageRequest.of(from / size, size));
+
+        return pages.stream()
                 .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }
@@ -137,12 +145,9 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new UserDontExistsException("Такого пользователя нет."));
-        Booking booking = bookingRepository.findByItemIdAndBookerIdAndEndDateBefore(
+        bookingRepository.findByItemIdAndBookerIdAndEndDateBefore(
                 itemId, userId, LocalDateTime.now()).orElseThrow(() ->
                 new RequestException("Данный пользователь не арендовал этот предмет."));
-        if (booking == null) {
-            throw new RequestException("Данный пользователь не арендовал этот предмет.");
-        }
         Comment comment = commentRepository.save(CommentMapper.mapToComment(commentDto, itemId, userId));
         comment.setUser(user);
         return CommentMapper.mapToDto(comment);

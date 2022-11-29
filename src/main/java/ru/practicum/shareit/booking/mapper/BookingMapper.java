@@ -17,19 +17,6 @@ import ru.practicum.shareit.user.model.User;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
 
-    public static Booking mapToBooking(BookingDto bookingDto) {
-        Booking booking = new Booking();
-        Item item = ItemMapper.mapToItem(bookingDto.getItem(), bookingDto.getBooker().getId());
-        User user = UserMapper.mapToUser(bookingDto.getBooker());
-        booking.setId(bookingDto.getId());
-        booking.setStartDate(bookingDto.getStart());
-        booking.setEndDate(bookingDto.getEnd());
-        booking.setItem(item);
-        booking.setBooker(user);
-        booking.setStatus(bookingDto.getStatus());
-        return booking;
-    }
-
     public static BookingDto mapToDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
         ItemDto itemDto = ItemMapper.mapToItemDto(booking.getItem());
