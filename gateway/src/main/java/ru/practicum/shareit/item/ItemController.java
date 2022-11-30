@@ -10,7 +10,6 @@ import ru.practicum.shareit.Marker;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -38,11 +37,11 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> getByText(@RequestHeader("X-Sharer-User-Id") long userId,
-                                            @RequestParam @NotBlank String text,
+                                            @RequestParam String text,
                                             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                             @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Get by text");
-        return itemClient.getByText(text, from, size);
+        return itemClient.getByText(text, from, size, userId);
     }
 
     @PostMapping

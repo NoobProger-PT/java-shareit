@@ -39,13 +39,13 @@ public class ItemClient extends BaseClient {
         return get("/" + itemId, userId);
     }
 
-    public ResponseEntity<Object> getByText(String text, Integer from, Integer size) {
+    public ResponseEntity<Object> getByText(String text, Integer from, Integer size, long userId) {
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,
                 "size", size
         );
-        return get("/search?text={text}&from={from}&size={size}", null, parameters);
+        return get("/search?text={text}&from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> add(long userId, ItemDto itemDto) {
