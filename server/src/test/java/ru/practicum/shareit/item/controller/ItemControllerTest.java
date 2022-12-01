@@ -85,7 +85,7 @@ class ItemControllerTest {
         when(itemService.getAll(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemWithBookingDto));
 
-        mvc.perform(get("/items")
+        mvc.perform(get("/items?from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
@@ -125,24 +125,11 @@ class ItemControllerTest {
     }
 
     @Test
-    public void shouldGetAllWithWrongFromAndSize() throws Exception {
-        when(itemService.findById(anyLong(), anyLong()))
-                .thenReturn(itemWithBookingAndCommentDto);
-
-        mvc.perform(get("/items?from=-1&size=-1")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
     public void shouldGetAllByText() throws Exception {
         when(itemService.findByText(anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemDto));
 
-        mvc.perform(get("/items/search?text='desc'")
+        mvc.perform(get("/items/search?text='desc'&from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 20L)
@@ -161,7 +148,7 @@ class ItemControllerTest {
         when(itemService.findByText(anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemDto));
 
-        mvc.perform(get("/items/search?text=")
+        mvc.perform(get("/items/search?text=&from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 20L)

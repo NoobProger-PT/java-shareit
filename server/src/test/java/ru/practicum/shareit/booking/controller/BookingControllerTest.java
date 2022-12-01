@@ -55,7 +55,6 @@ class BookingControllerTest {
         inputBookingDto.setStart(LocalDateTime.of(2023, 01, 10, 10, 10));
 
         inputBookingDto2.setItemId(1L);
-        inputBookingDto2.setEnd(LocalDateTime.of(2025, 01, 10, 10, 10));
         inputBookingDto2.setStart(LocalDateTime.of(2026, 01, 10, 10, 10));
     }
 
@@ -81,7 +80,7 @@ class BookingControllerTest {
         when(bookingService.getAllByUser(anyLong(), any(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
-        mvc.perform(get("/bookings")
+        mvc.perform(get("/bookings?state=ALL&from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
@@ -111,7 +110,7 @@ class BookingControllerTest {
         when(bookingService.getAllByOwner(anyLong(), any(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
-        mvc.perform(get("/bookings/owner")
+        mvc.perform(get("/bookings/owner?state=ALL&from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
