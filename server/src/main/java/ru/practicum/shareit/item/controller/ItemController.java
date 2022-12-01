@@ -10,8 +10,6 @@ import ru.practicum.shareit.item.dto.ItemWithBookingAndCommentDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -23,8 +21,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemWithBookingDto> get(@RequestHeader("X-Sharer-User-Id") long userId,
-                                        @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                        @RequestParam(defaultValue = "10") @Positive int size) {
+                                        @RequestParam int from,
+                                        @RequestParam int size) {
         return itemService.getAll(userId, from, size);
     }
 
@@ -37,8 +35,8 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> getByText(@RequestHeader("X-Sharer-User-Id") long userId,
                                   @RequestParam String text,
-                                   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                   @RequestParam(defaultValue = "10") @Positive int size) {
+                                   @RequestParam int from,
+                                   @RequestParam int size) {
         if (text.isBlank()) {
             return List.of();
         }

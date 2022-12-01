@@ -8,10 +8,7 @@ import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.RequestException;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -30,26 +27,23 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllByUser(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                @RequestParam(defaultValue = "ALL") BookingState state,
-                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                         @RequestParam(defaultValue = "10") @Positive int size) {
+                                         @RequestParam BookingState state,
+                                         @RequestParam int from,
+                                         @RequestParam int size) {
         return bookingService.getAllByUser(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                 @RequestParam(defaultValue = "ALL") BookingState state,
-                                          @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                          @RequestParam(defaultValue = "10") @Positive int size) {
+                                          @RequestParam BookingState state,
+                                          @RequestParam int from,
+                                          @RequestParam int size) {
         return bookingService.getAllByOwner(userId, state, from, size);
     }
 
     @PostMapping
     public BookingDto create(@RequestHeader("X-Sharer-User-Id") long bookerId,
                                  @Validated({Marker.Create.class}) @RequestBody InputBookingDto inputDto) {
-        if (!inputDto.getStart().isBefore(inputDto.getEnd())) {
-            throw new RequestException("Неверно указана дата аренды.");
-        }
         return bookingService.create(bookerId, inputDto);
     }
 

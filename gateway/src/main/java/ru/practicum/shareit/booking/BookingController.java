@@ -17,6 +17,7 @@ import javax.validation.constraints.PositiveOrZero;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
     private final BookingClient bookingClient;
 
