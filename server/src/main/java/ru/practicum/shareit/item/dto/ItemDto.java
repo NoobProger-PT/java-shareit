@@ -1,11 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
-import ru.practicum.shareit.Marker;
-import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import ru.practicum.shareit.user.dto.UserDto;
 
 @Setter
 @Getter
