@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentDto {
     private Long id;
-    @NotBlank(groups = Marker.Create.class)
     private String text;
     private String authorName;
     private LocalDateTime created = LocalDateTime.now();

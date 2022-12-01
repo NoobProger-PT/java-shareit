@@ -13,11 +13,8 @@ import javax.validation.constraints.NotNull;
 public class ItemDto {
     private Long id;
     private UserDto owner;
-    @NotBlank(groups = {Marker.Create.class})
     private String name;
-    @NotBlank(groups = {Marker.Create.class})
     private String description;
-    @NotNull(groups = {Marker.Create.class})
     private Boolean available;
     private Long requestId;
 

@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 public class UserDto {
-
     private Long id;
     @NotBlank(groups = {Marker.Create.class})
     private String name;
