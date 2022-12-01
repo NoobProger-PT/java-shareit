@@ -100,19 +100,6 @@ class ItemRequestControllerTest {
                         .get(0).getId().intValue())));
     }
 
-//    @Test
-//    public void getAllWithWrongFrom() throws Exception {
-//        when(itemRequestService.getByFromAndSize(anyInt(), anyInt(), anyLong()))
-//                .thenReturn(List.of(itemRequestDto));
-//
-//        mvc.perform(get("/requests/all?from=-1&size=-1")
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .header("X-Sharer-User-Id", 1L)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isInternalServerError());
-//    }
-
     @Test
     public void create() throws Exception {
         when(itemRequestService.create(anyLong(), any()))

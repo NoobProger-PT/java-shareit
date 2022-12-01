@@ -140,19 +140,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void createWithWrongInputData() throws Exception {
-        when(bookingService.create(anyLong(), any()))
-                .thenReturn(bookingDto);
-        mvc.perform(post("/bookings")
-                        .content(mapper.writeValueAsString(inputBookingDto2))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void makeApprove() throws Exception {
         when(bookingService.makeApprove(anyLong(), anyLong(), anyBoolean()))
                 .thenReturn(bookingDto);
