@@ -37,9 +37,6 @@ public class ItemController {
                                   @RequestParam String text,
                                    @RequestParam int from,
                                    @RequestParam int size) {
-        if (text.isBlank()) {
-            return List.of();
-        }
         return itemService.findByText(text, from, size);
     }
 
