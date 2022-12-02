@@ -144,20 +144,6 @@ class ItemControllerTest {
     }
 
     @Test
-    public void shouldGetAllByWrongText() throws Exception {
-        when(itemService.findByText(anyString(), anyInt(), anyInt()))
-                .thenReturn(List.of(itemDto));
-
-        mvc.perform(get("/items/search?text=&from=0&size=10")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 20L)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(List.of())));
-    }
-
-    @Test
     public void shouldAdd() throws Exception {
         when(itemService.addNew(anyLong(), any()))
                 .thenReturn(itemDto);
